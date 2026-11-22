@@ -164,9 +164,16 @@
   const arDigits = "٠١٢٣٤٥٦٧٨٩";
 
   const words = {
-    اول: 1, دوم: 2, سوم: 3, چهارم: 4,
-    پنجم: 5, ششم: 6, هفتم: 7,
-    هشتم: 8, نهم: 9, دهم: 10
+    اول: 1,
+    دوم: 2,
+    سوم: 3,
+    چهارم: 4,
+    پنجم: 5,
+    ششم: 6,
+    هفتم: 7,
+    هشتم: 8,
+    نهم: 9,
+    دهم: 10
   };
 
   function episodeNumber(title) {
@@ -185,7 +192,7 @@
       return n ? Number(n[1]) : 1;
     }
 
-    return Number(m[1]) || words[m[1]] || null;
+    return Number(m[1]) || words[m[1]] || 1;
   }
 
   function seriesName(title) {
@@ -243,6 +250,14 @@
     } catch (error) {
       // Fall back to inline playback.
     }
+  }
+
+  function startVideo(url, area) {
+    if (!url || !area) return;
+
+    const video = makeVideo(url);
+    area.replaceChildren(video);
+    playFullscreen(video);
   }
 
   // ========================================
@@ -355,24 +370,13 @@
       return getCreatedTime(b) - getCreatedTime(a);
     });
 
-    const unique = new Map();
-
-    sorted.forEach(item => {
-      const name = item.kind === "series"
+    // Each uploaded item appears separately.
+    const latestItems = sorted.slice(0, 6).map(item => ({
+      ...item,
+      displayName: item.kind === "series"
         ? seriesName(item.title)
-        : item.title;
-
-      const key = item.kind + "|" + name;
-
-      if (!unique.has(key)) {
-        unique.set(key, {
-          ...item,
-          displayName: name
-        });
-      }
-    });
-
-    const latestItems = [...unique.values()].slice(0, 6);
+        : item.title
+    }));
 
     if (!latestItems.length) {
       latestSection.hidden = true;
@@ -398,7 +402,7 @@
 
       posterBox.style.cssText = `
         width: 100%;
-        aspect-ratio: 16 / 9
+        aspect-ratio: 16 / 9;
         background: linear-gradient(
           145deg,
           #482066,
@@ -422,6 +426,7 @@
           width: 100%;
           height: 100%;
           object-fit: contain;
+          display: block;
         `;
 
         img.onerror = () => {
@@ -480,7 +485,10 @@
 
       const button = document.createElement("button");
       button.type = "button";
-      button.textContent = "▶ تماشا";
+
+      button.textContent = item.kind === "series"
+        ? "▶ قسمت " + episodeNumber(item.title)
+        : "▶ تماشا";
 
       button.style.cssText = `
         margin-top: auto;
@@ -494,48 +502,18 @@
         cursor: pointer;
       `;
 
+      const playerArea = document.createElement("div");
+
       button.onclick = () => {
-        filter = "all";
-        categoryFilter = "all";
-        updateFilterButtons();
-        render();
-
-        const grid = $("grid");
-
-        if (!grid) return;
-
-        const cards = [...grid.querySelectorAll(".card")];
-
-        const matchingCard = cards.find(card => {
-          const heading = card.querySelector(".info h3");
-          return heading &&
-            heading.textContent === item.displayName;
-        });
-
-        if (matchingCard) {
-          matchingCard.scrollIntoView({
-            behavior: "smooth",
-            block: "center"
-          });
-
-          matchingCard.style.outline =
-            "2px solid #ffd34f";
-
-          setTimeout(() => {
-            matchingCard.style.outline = "";
-          }, 2500);
-        } else {
-          grid.scrollIntoView({
-            behavior: "smooth"
-          });
-        }
+        startVideo(item.url, playerArea);
       };
 
       content.append(
         title,
         type,
         category,
-        button
+        button,
+        playerArea
       );
 
       card.append(posterBox, content);
@@ -567,6 +545,7 @@
       return kindMatches && categoryMatches;
     });
 
+    // Every Firestore item has its own card.
     const groups = new Map();
 
     list.forEach(x => {
@@ -574,17 +553,13 @@
         ? seriesName(x.title)
         : x.title;
 
-      const key = x.kind + "|" + name;
+      const key = x.id;
 
-      if (!groups.has(key)) {
-        groups.set(key, {
-          name,
-          kind: x.kind,
-          episodes: []
-        });
-      }
-
-      groups.get(key).episodes.push(x);
+      groups.set(key, {
+        name,
+        kind: x.kind,
+        episodes: [x]
+      });
     });
 
     if (!groups.size) {
@@ -610,10 +585,7 @@
     }
 
     groups.forEach(group => {
-      const entries = group.episodes.sort((a, b) =>
-        (episodeNumber(a.title) || 999) -
-        (episodeNumber(b.title) || 999)
-      );
+      const entries = group.episodes;
 
       const card = document.createElement("article");
       card.className = "card";
@@ -621,7 +593,7 @@
       const thumb = document.createElement("div");
       thumb.className = "thumb";
 
-      const poster = entries.find(x => x.poster)?.poster;
+      const poster = entries[0]?.poster;
 
       if (poster) {
         const img = document.createElement("img");
@@ -646,8 +618,9 @@
       title.textContent = group.name;
 
       const details = document.createElement("p");
+
       details.textContent = group.kind === "series"
-        ? "📺 سریال • " + entries.length + " قسمت"
+        ? "📺 سریال"
         : "🎬 فیلم";
 
       info.append(title, details);
@@ -672,8 +645,7 @@
         info.append(categoryText);
       }
 
-      const descText =
-        entries.find(x => x.description)?.description;
+      const descText = entries[0]?.description;
 
       if (descText) {
         const desc = document.createElement("p");
@@ -684,39 +656,23 @@
       const playerArea = document.createElement("div");
 
       if (group.kind === "series") {
-        const heading = document.createElement("p");
-        heading.textContent =
-          "قسمت موردنظر را انتخاب کنید:";
+        const x = entries[0];
 
-        info.append(heading);
-
-        const buttons = document.createElement("div");
-        buttons.style.display = "flex";
-        buttons.style.flexWrap = "wrap";
-        buttons.style.gap = "8px";
-
-        entries.forEach((x, i) => {
-          if (!x.url) return;
-
+        if (x.url) {
           const btn = document.createElement("button");
           const num = episodeNumber(x.title);
 
-          btn.textContent = "▶ قسمت " + (num || i + 1);
+          btn.type = "button";
+          btn.textContent = "▶ قسمت " + num;
           btn.className = "yellow";
           btn.style.padding = "9px 12px";
 
           btn.onclick = () => {
-            const video = makeVideo(x.url);
-
-            playerArea.replaceChildren(video);
-
-            playFullscreen(video);
+            startVideo(x.url, playerArea);
           };
 
-          buttons.append(btn);
-        });
-
-        info.append(buttons, playerArea);
+          info.append(btn, playerArea);
+        }
       } else {
         const x = entries[0];
 
@@ -773,35 +729,42 @@
 
       button.onclick = () => openEditor(item.id);
 
-const deleteButton = document.createElement("button");
-deleteButton.type = "button";
-deleteButton.textContent = "🗑️ حذف";
-deleteButton.style.background = "#b42335";
-deleteButton.style.color = "#fff";
-deleteButton.style.padding = "8px 10px";
-deleteButton.style.borderRadius = "8px";
+      const deleteButton = document.createElement("button");
+      deleteButton.type = "button";
+      deleteButton.textContent = "🗑️ حذف";
+      deleteButton.style.background = "#b42335";
+      deleteButton.style.color = "#fff";
+      deleteButton.style.padding = "8px 10px";
+      deleteButton.style.borderRadius = "8px";
 
-deleteButton.onclick = async () => {
-  if (!adminMode || !isAdmin(auth.currentUser)) {
-    alert("اجازه حذف ندارید.");
-    return;
-  }
+      deleteButton.onclick = async () => {
+        if (!adminMode || !isAdmin(auth.currentUser)) {
+          alert("اجازه حذف ندارید.");
+          return;
+        }
 
-  if (!confirm(`آیا از حذف «${item.title}» مطمئنی؟`)) {
-    return;
-  }
+        if (!confirm(
+          `آیا از حذف «${item.title}» مطمئنی؟`
+        )) {
+          return;
+        }
 
-  try {
-    deleteButton.disabled = true;
-    await db.collection("movies").doc(item.id).delete();
-    alert("فیلم با موفقیت حذف شد.");
-  } catch (error) {
-    deleteButton.disabled = false;
-    alert("حذف انجام نشد: " + error.message);
-  }
-};
+        try {
+          deleteButton.disabled = true;
 
-row.append(name, button, deleteButton);      container.append(row);
+          await db.collection("movies")
+            .doc(item.id)
+            .delete();
+
+          alert("فیلم با موفقیت حذف شد.");
+        } catch (error) {
+          deleteButton.disabled = false;
+          alert("حذف انجام نشد: " + error.message);
+        }
+      };
+
+      row.append(name, button, deleteButton);
+      container.append(row);
     });
   }
 
@@ -882,16 +845,18 @@ row.append(name, button, deleteButton);      container.append(row);
       "در حال ذخیره تغییرات…";
 
     try {
-      await db.collection("movies").doc(editingId).update({
-        title,
-        type: kind,
-        kind,
-        category,
-        year,
-        description,
-        posterUrl,
-        videoUrl
-      });
+      await db.collection("movies")
+        .doc(editingId)
+        .update({
+          title,
+          type: kind,
+          kind,
+          category,
+          year,
+          description,
+          posterUrl,
+          videoUrl
+        });
 
       $("editStatus").textContent =
         "✅ تغییرات با موفقیت ذخیره شد.";
