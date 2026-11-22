@@ -106,6 +106,37 @@ main, section, header, footer { max-width: 100%; }
   background: #583178;
 }
 
+/* CATEGORY RESULTS */
+#categoryResults {
+  display: none;
+  margin-top: 22px;
+}
+
+#categoryResults h3 {
+  color: #ffd56a;
+  margin: 20px 0;
+}
+
+#backToCategories {
+  background: #39224f;
+  color: #ffd56a;
+  border: 1px solid #b18a4d;
+  border-radius: 12px;
+  padding: 12px 18px;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+#categoryGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+#categoryGrid > * {
+  min-width: 0;
+}
+
 .about-card {
   max-width: 550px;
   margin: 20px auto;
@@ -145,6 +176,7 @@ main, section, header, footer { max-width: 100%; }
   <button id="adminOpen" hidden>مدیریت</button>
 </header>
 
+<!-- HOME -->
 <main id="homePage">
 
   <section class="hero">
@@ -154,7 +186,7 @@ main, section, header, footer { max-width: 100%; }
         قصه‌ی بعدی<br>
         <span>از اینجا شروع می‌شه.</span>
       </h1>
-      <p>آرشیو فیلم‌ها و سریال‌های موردعلاقه‌ات</p>
+      <p>آرشیو فیلم‌ها و سریالهای موردعلاقه‌ات</p>
       <a class="yellow" href="#library">دیدن آرشیو ←</a>
     </div>
 
@@ -181,23 +213,42 @@ main, section, header, footer { max-width: 100%; }
 
 </main>
 
-<!-- 8 CATEGORIES -->
+<!-- CATEGORIES -->
 <section id="categoriesPage">
-  <h2 class="page-title">🎞️ دسته‌بندی‌ها</h2>
-  <p>دوست داری چی تماشا کنی؟ 💜</p>
 
-  <div class="category-list">
-    <button class="category-btn" type="button" data-category="talkshow">🎤 تاک شو</button>
-    <button class="category-btn" type="button" data-category="comedy">😂 کمدی</button>
-    <button class="category-btn" type="button" data-category="romance">❤️ عاشقانه</button>
-    <button class="category-btn" type="button" data-category="action">💥 اکشن</button>
-    <button class="category-btn" type="button" data-category="musical">🎵 موزیکال</button>
-    <button class="category-btn" type="button" data-category="foreign">🌍 خارجی</button>
-    <button class="category-btn" type="button" data-category="cartoon">🐣 کارتون</button>
-    <button class="category-btn" type="button" data-category="mystery">🕵️ معمایی</button>
+  <div id="categoryMenu">
+    <h2 class="page-title">🎞️ دسته‌بندی‌ها</h2>
+    <p>دوست داری چی تماشا کنی؟ 💜</p>
+
+    <div class="category-list">
+      <button class="category-btn" type="button" data-category="talkshow">🎤 تاک شو</button>
+      <button class="category-btn" type="button" data-category="comedy">😂 کمدی</button>
+      <button class="category-btn" type="button" data-category="romance">❤️ عاشقانه</button>
+      <button class="category-btn" type="button" data-category="action">💥 اکشن</button>
+      <button class="category-btn" type="button" data-category="musical">🎵 موزیکال</button>
+      <button class="category-btn" type="button" data-category="foreign">🌍 خارجی</button>
+      <button class="category-btn" type="button" data-category="cartoon">🐣 کارتون</button>
+      <button class="category-btn" type="button" data-category="mystery">🕵️ معمایی</button>
+    </div>
   </div>
+
+  <div id="categoryResults">
+    <button id="backToCategories" type="button">
+      → بازگشت به دسته‌بندی‌ها
+    </button>
+
+    <h3 id="selectedCategoryTitle"></h3>
+
+    <p id="categoryEmpty" hidden>
+      هنوز اثری در این دسته ثبت نشده است.
+    </p>
+
+    <div id="categoryGrid" class="grid"></div>
+  </div>
+
 </section>
 
+<!-- ABOUT US -->
 <section id="aboutPage">
   <div class="about-card">
     <div class="about-logo">♛ ZH</div>
@@ -225,7 +276,9 @@ main, section, header, footer { max-width: 100%; }
   ساخته‌شده با ♥ برای Zh Movies
 </footer>
 
+<!-- BOTTOM NAV -->
 <nav class="bottom-nav" aria-label="منوی اصلی">
+
   <button class="nav-item active" id="homeTab" type="button" aria-current="page">
     <span>🏠</span>
     هوم
@@ -240,6 +293,7 @@ main, section, header, footer { max-width: 100%; }
     <span>💜</span>
     درباره ما
   </button>
+
 </nav>
 
 <!-- ADMIN MODAL -->
@@ -258,12 +312,14 @@ main, section, header, footer { max-width: 100%; }
     </form>
 
     <div id="uploadPanel" hidden>
+
       <p id="who"></p>
       <button id="logout">خروج</button>
 
       <hr>
 
       <form id="upload">
+
         <input
           id="title"
           placeholder="نام فیلم یا سریال"
@@ -279,7 +335,6 @@ main, section, header, footer { max-width: 100%; }
           <input id="year" type="number" placeholder="سال">
         </div>
 
-        <!-- GENRE SELECTOR -->
         <select id="category" required>
           <option value="">انتخاب دسته‌بندی</option>
           <option value="talkshow">🎤 تاک شو</option>
@@ -311,6 +366,7 @@ main, section, header, footer { max-width: 100%; }
 
         <p id="status"></p>
       </form>
+
     </div>
   </section>
 </div>
@@ -318,6 +374,7 @@ main, section, header, footer { max-width: 100%; }
 <script src="firebase-config.js"></script>
 <script src="app.js"></script>
 
+<!-- PAGE NAVIGATION -->
 <script>
 (function () {
   const pages = {
@@ -331,6 +388,34 @@ main, section, header, footer { max-width: 100%; }
     categories: document.getElementById("categoriesTab"),
     about: document.getElementById("aboutTab")
   };
+
+  const categoryMenu =
+    document.getElementById("categoryMenu");
+
+  const categoryResults =
+    document.getElementById("categoryResults");
+
+  const categoryGrid =
+    document.getElementById("categoryGrid");
+
+  const categoryEmpty =
+    document.getElementById("categoryEmpty");
+
+  const homeGrid =
+    document.getElementById("grid");
+
+  const categoryNames = {
+    talkshow: "🎤 تاک شو",
+    comedy: "😂 کمدی",
+    romance: "❤️ عاشقانه",
+    action: "💥 اکشن",
+    musical: "🎵 موزیکال",
+    foreign: "🌍 خارجی",
+    cartoon: "🐣 کارتون",
+    mystery: "🕵️ معمایی"
+  };
+
+  let selectedCategory = null;
 
   function showPage(pageName) {
     Object.keys(pages).forEach(function (name) {
@@ -352,11 +437,61 @@ main, section, header, footer { max-width: 100%; }
     window.scrollTo(0, 0);
   }
 
+  function showCategoryMenu() {
+    selectedCategory = null;
+
+    categoryMenu.style.display = "block";
+    categoryResults.style.display = "none";
+
+    // Reset the home archive to all items.
+    document.dispatchEvent(
+      new CustomEvent("zh-category-filter", {
+        detail: { category: "all" }
+      })
+    );
+  }
+
+  function updateCategoryResults() {
+    if (!selectedCategory) return;
+
+    // app.js renders the filtered cards into #grid.
+    // Move those actual cards to the category page.
+    const cards = Array.from(homeGrid.children);
+
+    categoryGrid.replaceChildren(...cards);
+
+    categoryEmpty.hidden = cards.length > 0;
+  }
+
+  function openCategory(category) {
+    if (!categoryNames[category]) return;
+
+    selectedCategory = category;
+
+    categoryMenu.style.display = "none";
+    categoryResults.style.display = "block";
+
+    document.getElementById("selectedCategoryTitle")
+      .textContent = categoryNames[category];
+
+    // Tell app.js to apply the category filter.
+    document.dispatchEvent(
+      new CustomEvent("zh-category-filter", {
+        detail: { category: category }
+      })
+    );
+
+    updateCategoryResults();
+    showPage("categories");
+  }
+
   tabs.home.addEventListener("click", function () {
+    showCategoryMenu();
     showPage("home");
   });
 
   tabs.categories.addEventListener("click", function () {
+    showCategoryMenu();
     showPage("categories");
   });
 
@@ -367,26 +502,36 @@ main, section, header, footer { max-width: 100%; }
   document.getElementById("logoHome")
     .addEventListener("click", function (event) {
       event.preventDefault();
+      showCategoryMenu();
       showPage("home");
     });
 
   document.querySelectorAll(".category-btn")
     .forEach(function (button) {
       button.addEventListener("click", function () {
-        const category = button.dataset.category;
-
-        showPage("home");
-
-        // app.js will handle the actual category filtering.
-        document.dispatchEvent(new CustomEvent("zh-category-filter", {
-          detail: { category: category }
-        }));
-
-        document.getElementById("library").scrollIntoView({
-          behavior: "smooth"
-        });
+        openCategory(button.dataset.category);
       });
     });
+
+  document.getElementById("backToCategories")
+    .addEventListener("click", function () {
+      showCategoryMenu();
+      showPage("categories");
+    });
+
+  // Keep category results updated when Firebase changes.
+  const observer = new MutationObserver(function () {
+    if (!selectedCategory) return;
+
+    // Only update when app.js has rendered new cards.
+    if (homeGrid.children.length > 0) {
+      updateCategoryResults();
+    }
+  });
+
+  observer.observe(homeGrid, {
+    childList: true
+  });
 })();
 </script>
 
