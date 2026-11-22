@@ -796,6 +796,20 @@ for (let star = 1; star <= 5; star++) {
 }
 
 info.append(ratingBox);
+      const ratingInfo = document.createElement("p");
+
+const ratingCount = Object.values(movieRatings)
+  .length;
+
+ratingInfo.style.textAlign = "center";
+ratingInfo.style.color = "#ffd56a";
+ratingInfo.style.fontSize = "13px";
+
+ratingInfo.textContent = currentRating > 0
+  ? "⭐ " + currentRating.toFixed(1) + " از ۵"
+  : "هنوز امتیازی ثبت نشده";
+
+info.append(ratingInfo);
       const categories = [
         ...new Set(
           entries.map(x => x.category)
