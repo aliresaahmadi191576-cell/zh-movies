@@ -20,7 +20,39 @@
   let filter = "all";
   let categoryFilter = "all";
   let searchQuery = "";
+const FAVORITES_KEY = "zh_movies_favorites";
 
+let favorites = [];
+
+try {
+  const saved = JSON.parse(
+    localStorage.getItem(FAVORITES_KEY) || "[]"
+  );
+
+  favorites = Array.isArray(saved) ? saved : [];
+} catch (error) {
+  favorites = [];
+}
+
+function isFavorite(id) {
+  return favorites.includes(id);
+}
+
+function toggleFavorite(id) {
+  if (isFavorite(id)) {
+    favorites = favorites.filter(x => x !== id);
+  } else {
+    favorites.push(id);
+  }
+
+  localStorage.setItem(
+    FAVORITES_KEY,
+    JSON.stringify(favorites)
+  );
+
+  render();
+  renderFavorites();
+}
 const searchInput = document.getElementById("zhSearchInput");
 
 if (searchInput) {
