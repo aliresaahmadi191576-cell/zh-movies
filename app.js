@@ -527,7 +527,7 @@
       `;
 
       const playerArea = document.createElement("div");
-
+playerArea.style.display = "none";
       button.onclick = () => {
         startVideo(item.url, playerArea);
       };
@@ -678,7 +678,7 @@
       }
 
       const playerArea = document.createElement("div");
-
+playerArea.style.display = "none";
       if (group.kind === "series") {
         const x = entries[0];
 
