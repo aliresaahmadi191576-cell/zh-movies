@@ -1142,7 +1142,39 @@ function renderFavorites() {
       "اتصال به Firebase برقرار نشد.";
     return;
   }
+// ⭐ Live ratings from Firebase
+db.collection("ratings").onSnapshot(
+  snapshot => {
+    const totals = {};
 
+    snapshot.forEach(doc => {
+      const rating = doc.data();
+      const movieId = rating.movieId;
+      const score = Number(rating.score);
+
+      if (!movieId || score < 1 || score > 5) return;
+
+      if (!totals[movieId]) {
+        totals[movieId] = { sum: 0, count: 0 };
+      }
+
+      totals[movieId].sum += score;
+      totals[movieId].count++;
+    });
+
+    movieRatings = {};
+
+    Object.keys(totals).forEach(movieId => {
+      movieRatings[movieId] =
+        totals[movieId].sum / totals[movieId].count;
+    });
+
+    render();
+  },
+  error => {
+    console.error("Ratings loading error:", error);
+  }
+);
   db.collection("movies").onSnapshot(
     snapshot => {
       items = snapshot.docs.map(doc => {
