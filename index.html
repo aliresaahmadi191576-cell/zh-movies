@@ -617,7 +617,9 @@ main, section, header, footer {
     showCategoryMenu();
     showPage("categories");
   });
-
+tabs.favorites.addEventListener("click", function () {
+  showPage("favorites");
+});
   tabs.about.addEventListener("click", function () {
     showPage("about");
   });
