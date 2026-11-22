@@ -798,8 +798,7 @@ for (let star = 1; star <= 5; star++) {
 info.append(ratingBox);
       const ratingInfo = document.createElement("p");
 
-const ratingCount = Object.values(movieRatings)
-  .length;
+const ratingCount = movieRatingCounts[movieId] || 0;
 
 ratingInfo.style.textAlign = "center";
 ratingInfo.style.color = "#ffd56a";
