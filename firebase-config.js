@@ -1,10 +1,9 @@
-// Firebase Console > Project settings > Your apps > Zh movies Web
-// Copy the Web app config here. Do not put service-account/private keys in this file.
+
 window.FIREBASE_CONFIG = {
-  apiKey: "PASTE_API_KEY",
+  apiKey: "AIzaSyANAYLxYWE8iFuKEv37lLpOpPpec9XbMmA",
   authDomain: "zh-movies-f7e04.firebaseapp.com",
   projectId: "zh-movies-f7e04",
-  storageBucket: "PASTE_STORAGE_BUCKET",
+  storageBucket: "zh-movies-f7e04.firebasestorage.app",
   messagingSenderId: "901255999257",
-  appId: "PASTE_WEB_APP_ID"
+  appId: "1:901255999257:web:9e51af9677753ed8869f88"
 };
