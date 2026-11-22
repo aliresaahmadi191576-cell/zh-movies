@@ -804,8 +804,9 @@ ratingInfo.style.textAlign = "center";
 ratingInfo.style.color = "#ffd56a";
 ratingInfo.style.fontSize = "13px";
 
-ratingInfo.textContent = currentRating > 0
-  ? "⭐ " + currentRating.toFixed(1) + " از ۵"
+ratingInfo.textContent = ratingCount > 0
+  ? "⭐ " + currentRating.toFixed(1) +
+    " از ۵  •  " + ratingCount + " رأی"
   : "هنوز امتیازی ثبت نشده";
 
 info.append(ratingInfo);
