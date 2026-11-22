@@ -581,7 +581,15 @@ playerArea.style.display = "none";
         categoryFilter === "all" ||
         x.category === categoryFilter;
 
-      return kindMatches && categoryMatches;
+      const normalizedTitle = x.title
+  .toLocaleLowerCase("fa")
+  .replace(/ي/g, "ی")
+  .replace(/ك/g, "ک");
+
+const searchMatches =
+  !searchQuery || normalizedTitle.includes(searchQuery);
+
+return kindMatches && categoryMatches && searchMatches;
     });
 
     // Every Firestore item has its own card.
