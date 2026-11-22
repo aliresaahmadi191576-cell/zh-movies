@@ -74,13 +74,15 @@
       }
 
       if (x.url) {
-        const link = document.createElement("a");
-        link.href = x.url;
-        link.target = "_blank";
-        link.rel = "noopener noreferrer";
-        link.textContent = "تماشای ویدیو";
-        info.append(link);
-      }
+  const video = document.createElement("video");
+  video.src = x.url;
+  video.controls = true;
+  video.playsInline = true;
+  video.preload = "metadata";
+  video.style.width = "100%";
+  video.style.borderRadius = "12px";
+  info.append(video);
+}
 
       card.append(thumb, info);
       grid.append(card);
