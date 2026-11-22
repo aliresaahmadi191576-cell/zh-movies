@@ -253,12 +253,36 @@
   }
 
   function startVideo(url, area) {
-    if (!url || !area) return;
+  if (!url) return;
 
-    const video = makeVideo(url);
-    area.replaceChildren(video);
-    playFullscreen(video);
-  }
+  const video = makeVideo(url);
+
+  video.style.position = "fixed";
+  video.style.inset = "0";
+  video.style.width = "100%";
+  video.style.height = "100%";
+  video.style.margin = "0";
+  video.style.borderRadius = "0";
+  video.style.background = "#000";
+  video.style.zIndex = "99999";
+
+  document.body.appendChild(video);
+
+  const closeVideo = () => {
+    video.pause();
+    video.remove();
+  };
+
+  video.addEventListener("fullscreenchange", () => {
+    if (!document.fullscreenElement) {
+      closeVideo();
+    }
+  });
+
+  video.addEventListener("webkitendfullscreen", closeVideo);
+
+  playFullscreen(video);
+}
 
   // ========================================
   // 🔥 تازه‌های ژ موویز
