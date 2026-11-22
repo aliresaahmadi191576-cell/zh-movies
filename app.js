@@ -2,11 +2,52 @@
 (() => {
   const $ = id => document.getElementById(id);
   const cfg = window.FIREBASE_CONFIG;
+
+  // این مقدار باید با UID مدیر در قوانین Firestore یکی باشد.
+  const ADMIN_UID = "PLbmf0H2PYcPhX52spP8VpLRES53";
+
   let auth, db, items = [], filter = "all";
+  let currentUser = null;
 
   const modal = $("modal");
-  $("adminOpen").onclick = () => modal.classList.add("open");
+  const adminButton = $("adminOpen");
+
+  // ورود به مدیریت فقط با آدرس ?admin=1
+  const adminMode =
+    new URLSearchParams(window.location.search).get("admin") === "1";
+
+  function isAdmin(user) {
+    return !!user && user.uid === ADMIN_UID;
+  }
+
+  function updateAdminUI() {
+    const allowed = isAdmin(currentUser);
+
+    // دکمه مدیریت فقط در آدرس مخصوص نمایش داده می‌شود.
+    adminButton.hidden = !adminMode;
+
+    $("login").hidden = !adminMode || allowed;
+    $("uploadPanel").hidden = !adminMode || !allowed;
+
+    if (allowed) {
+      $("who").textContent = currentUser.email || "مدیر";
+    } else {
+      $("who").textContent = "";
+    }
+
+    if (!adminMode) {
+      modal.classList.remove("open");
+    }
+  }
+
+  adminButton.onclick = () => {
+    if (adminMode) {
+      modal.classList.add("open");
+    }
+  };
+
   $("close").onclick = () => modal.classList.remove("open");
+
   modal.onclick = e => {
     if (e.target === modal) modal.classList.remove("open");
   };
@@ -41,9 +82,10 @@
     );
 
     if (!m) {
-  const n = t.match(/(\d+)$/);
-  return n ? Number(n[1]) : 1;
-}
+      const n = t.match(/(\d+)$/);
+      return n ? Number(n[1]) : 1;
+    }
+
     return Number(m[1]) || words[m[1]] || null;
   }
 
@@ -54,7 +96,7 @@
         ""
       )
       .replace(/[0-9۰-۹٠-٩]+$/, "")
-.replace(/[-–—:|()]/g, " ")
+      .replace(/[-–—:|()]/g, " ")
       .replace(/\s+/g, " ")
       .trim();
   }
@@ -113,12 +155,16 @@
       thumb.className = "thumb";
 
       const poster = entries.find(x => x.poster)?.poster;
+
       if (poster) {
         const img = document.createElement("img");
         img.src = poster;
         img.alt = group.name;
         img.loading = "lazy";
-        img.onerror = () => { thumb.textContent = "✦"; };
+        img.onerror = () => {
+          thumb.replaceChildren();
+          thumb.textContent = "✦";
+        };
         thumb.append(img);
       } else {
         thumb.textContent = "✦";
@@ -138,6 +184,7 @@
       info.append(title, details);
 
       const descText = entries.find(x => x.description)?.description;
+
       if (descText) {
         const desc = document.createElement("p");
         desc.textContent = descText;
@@ -206,6 +253,7 @@
     snapshot => {
       items = snapshot.docs.map(doc => {
         const x = doc.data();
+
         return {
           title: x.title || "بدون عنوان",
           kind: x.kind === "series" || x.type === "series"
@@ -217,8 +265,7 @@
         };
       });
 
-      $("notice").textContent =
-        items.length + " مورد در آرشیو";
+      $("notice").textContent = items.length + " مورد در آرشیو";
       render();
     },
     () => {
@@ -228,24 +275,36 @@
   );
 
   auth.onAuthStateChanged(user => {
-    $("login").hidden = !!user;
-    $("uploadPanel").hidden = !user;
-    if (user) $("who").textContent = user.email;
+    currentUser = user;
+    updateAdminUI();
   });
 
   $("login").onsubmit = async e => {
     e.preventDefault();
+
+    if (!adminMode) return;
+
     try {
-      await auth.signInWithEmailAndPassword(
+      const result = await auth.signInWithEmailAndPassword(
         $("email").value,
         $("password").value
       );
+
+      if (!isAdmin(result.user)) {
+        await auth.signOut();
+        alert("این حساب اجازه مدیریت ندارد.");
+        return;
+      }
+
+      $("password").value = "";
     } catch (error) {
       alert("ورود ناموفق: " + error.message);
     }
   };
 
-  $("logout").onclick = () => auth.signOut();
+  $("logout").onclick = async () => {
+    await auth.signOut();
+  };
 
   $("upload").onsubmit = async e => {
     e.preventDefault();
@@ -253,8 +312,8 @@
     const user = auth.currentUser;
     const status = $("status");
 
-    if (!user) {
-      status.textContent = "ابتدا وارد شوید.";
+    if (!adminMode || !isAdmin(user)) {
+      status.textContent = "شما اجازه مدیریت ندارید.";
       return;
     }
 
@@ -275,6 +334,7 @@
     const button = $("upload").querySelector(
       'button[type="submit"]'
     );
+
     button.disabled = true;
     status.textContent = "در حال ذخیره…";
 
@@ -295,10 +355,11 @@
       status.textContent = "با موفقیت منتشر شد.";
       $("upload").reset();
     } catch (error) {
-      status.textContent =
-        "ذخیره نشد: " + error.message;
+      status.textContent = "ذخیره نشد: " + error.message;
     } finally {
       button.disabled = false;
     }
   };
+
+  updateAdminUI();
 })();
