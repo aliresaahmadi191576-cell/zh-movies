@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="fa" dir="rtl">
 <head>
@@ -30,9 +29,19 @@ body {
   padding-bottom: calc(85px + env(safe-area-inset-bottom));
 }
 
-img, video { max-width: 100%; }
-main, section, header, footer { max-width: 100%; }
-#grid, .grid > * { min-width: 0; }
+img, video {
+  max-width: 100%;
+}
+
+main, section, header, footer {
+  max-width: 100%;
+}
+
+#grid,
+#categoryGrid,
+.grid > * {
+  min-width: 0;
+}
 
 .bottom-nav {
   position: fixed;
@@ -106,7 +115,6 @@ main, section, header, footer { max-width: 100%; }
   background: #583178;
 }
 
-/* CATEGORY RESULTS */
 #categoryResults {
   display: none;
   margin-top: 22px;
@@ -137,6 +145,11 @@ main, section, header, footer { max-width: 100%; }
   min-width: 0;
 }
 
+#categoryEmpty {
+  color: #e4d5ee;
+  line-height: 2;
+}
+
 .about-card {
   max-width: 550px;
   margin: 20px auto;
@@ -154,16 +167,22 @@ main, section, header, footer { max-width: 100%; }
   font-weight: 800;
 }
 
-.about-card h2 { color: #ffd56a; }
+.about-card h2 {
+  color: #ffd56a;
+}
 
 .about-card p {
   color: #e4d5ee;
   line-height: 2.2;
 }
 
-.about-card small { color: #c4b0d3; }
+.about-card small {
+  color: #c4b0d3;
+}
 
-.modal { z-index: 100; }
+.modal {
+  z-index: 100;
+}
 </style>
 </head>
 
@@ -201,9 +220,15 @@ main, section, header, footer { max-width: 100%; }
       <h2>کتابخانه <span>Zh Movies</span></h2>
 
       <div>
-        <button class="filter active" data-filter="all">همه</button>
-        <button class="filter" data-filter="movie">فیلم</button>
-        <button class="filter" data-filter="series">سریال</button>
+        <button class="filter active" data-filter="all">
+          همه
+        </button>
+        <button class="filter" data-filter="movie">
+          فیلم
+        </button>
+        <button class="filter" data-filter="series">
+          سریال
+        </button>
       </div>
     </div>
 
@@ -221,14 +246,37 @@ main, section, header, footer { max-width: 100%; }
     <p>دوست داری چی تماشا کنی؟ 💜</p>
 
     <div class="category-list">
-      <button class="category-btn" type="button" data-category="talkshow">🎤 تاک شو</button>
-      <button class="category-btn" type="button" data-category="comedy">😂 کمدی</button>
-      <button class="category-btn" type="button" data-category="romance">❤️ عاشقانه</button>
-      <button class="category-btn" type="button" data-category="action">💥 اکشن</button>
-      <button class="category-btn" type="button" data-category="musical">🎵 موزیکال</button>
-      <button class="category-btn" type="button" data-category="foreign">🌍 خارجی</button>
-      <button class="category-btn" type="button" data-category="cartoon">🐣 کارتون</button>
-      <button class="category-btn" type="button" data-category="mystery">🕵️ معمایی</button>
+      <button class="category-btn" type="button" data-category="talkshow">
+        🎤 تاک شو
+      </button>
+
+      <button class="category-btn" type="button" data-category="comedy">
+        😂 کمدی
+      </button>
+
+      <button class="category-btn" type="button" data-category="romance">
+        ❤️ عاشقانه
+      </button>
+
+      <button class="category-btn" type="button" data-category="action">
+        💥 اکشن
+      </button>
+
+      <button class="category-btn" type="button" data-category="musical">
+        🎵 موزیکال
+      </button>
+
+      <button class="category-btn" type="button" data-category="foreign">
+        🌍 خارجی
+      </button>
+
+      <button class="category-btn" type="button" data-category="cartoon">
+        🐣 کارتون
+      </button>
+
+      <button class="category-btn" type="button" data-category="mystery">
+        🕵️ معمایی
+      </button>
     </div>
   </div>
 
@@ -279,17 +327,27 @@ main, section, header, footer { max-width: 100%; }
 <!-- BOTTOM NAV -->
 <nav class="bottom-nav" aria-label="منوی اصلی">
 
-  <button class="nav-item active" id="homeTab" type="button" aria-current="page">
+  <button
+    class="nav-item active"
+    id="homeTab"
+    type="button"
+    aria-current="page">
     <span>🏠</span>
     هوم
   </button>
 
-  <button class="nav-item" id="categoriesTab" type="button">
+  <button
+    class="nav-item"
+    id="categoriesTab"
+    type="button">
     <span>🎞️</span>
     دسته‌بندی
   </button>
 
-  <button class="nav-item" id="aboutTab" type="button">
+  <button
+    class="nav-item"
+    id="aboutTab"
+    type="button">
     <span>💜</span>
     درباره ما
   </button>
@@ -306,9 +364,21 @@ main, section, header, footer { max-width: 100%; }
     <h2>افزودن فیلم و سریال</h2>
 
     <form id="login">
-      <input id="email" type="email" placeholder="ایمیل مدیر" required>
-      <input id="password" type="password" placeholder="رمز عبور" required>
-      <button class="purple" type="submit">ورود</button>
+      <input
+        id="email"
+        type="email"
+        placeholder="ایمیل مدیر"
+        required>
+
+      <input
+        id="password"
+        type="password"
+        placeholder="رمز عبور"
+        required>
+
+      <button class="purple" type="submit">
+        ورود
+      </button>
     </form>
 
     <div id="uploadPanel" hidden>
@@ -347,7 +417,9 @@ main, section, header, footer { max-width: 100%; }
           <option value="mystery">🕵️ معمایی</option>
         </select>
 
-        <textarea id="description" placeholder="توضیحات کوتاه"></textarea>
+        <textarea
+          id="description"
+          placeholder="توضیحات کوتاه"></textarea>
 
         <input
           id="poster"
@@ -401,9 +473,6 @@ main, section, header, footer { max-width: 100%; }
   const categoryEmpty =
     document.getElementById("categoryEmpty");
 
-  const homeGrid =
-    document.getElementById("grid");
-
   const categoryNames = {
     talkshow: "🎤 تاک شو",
     comedy: "😂 کمدی",
@@ -443,24 +512,17 @@ main, section, header, footer { max-width: 100%; }
     categoryMenu.style.display = "block";
     categoryResults.style.display = "none";
 
-    // Reset the home archive to all items.
+    categoryGrid.replaceChildren();
+    categoryEmpty.hidden = true;
+
+    // Reset the archive filter to show all items.
     document.dispatchEvent(
       new CustomEvent("zh-category-filter", {
-        detail: { category: "all" }
+        detail: {
+          category: "all"
+        }
       })
     );
-  }
-
-  function updateCategoryResults() {
-    if (!selectedCategory) return;
-
-    // app.js renders the filtered cards into #grid.
-    // Move those actual cards to the category page.
-    const cards = Array.from(homeGrid.children);
-
-    categoryGrid.replaceChildren(...cards);
-
-    categoryEmpty.hidden = cards.length > 0;
   }
 
   function openCategory(category) {
@@ -471,17 +533,21 @@ main, section, header, footer { max-width: 100%; }
     categoryMenu.style.display = "none";
     categoryResults.style.display = "block";
 
+    categoryEmpty.hidden = true;
+    categoryGrid.replaceChildren();
+
     document.getElementById("selectedCategoryTitle")
       .textContent = categoryNames[category];
 
-    // Tell app.js to apply the category filter.
+    // app.js renders matching cards directly into categoryGrid.
     document.dispatchEvent(
       new CustomEvent("zh-category-filter", {
-        detail: { category: category }
+        detail: {
+          category: category
+        }
       })
     );
 
-    updateCategoryResults();
     showPage("categories");
   }
 
@@ -519,19 +585,6 @@ main, section, header, footer { max-width: 100%; }
       showPage("categories");
     });
 
-  // Keep category results updated when Firebase changes.
-  const observer = new MutationObserver(function () {
-    if (!selectedCategory) return;
-
-    // Only update when app.js has rendered new cards.
-    if (homeGrid.children.length > 0) {
-      updateCategoryResults();
-    }
-  });
-
-  observer.observe(homeGrid, {
-    childList: true
-  });
 })();
 </script>
 

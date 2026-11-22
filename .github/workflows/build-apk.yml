@@ -108,8 +108,8 @@ jobs:
                   applicationId 'com.zhmovies.app'
                   minSdk 23
                   targetSdk 35
-                  versionCode 3
-                  versionName '1.2'
+                  versionCode 5
+                  versionName '1.3.1'
               }
 
               buildTypes {
@@ -167,6 +167,19 @@ jobs:
               private View fullscreenView;
               private WebChromeClient.CustomViewCallback fullscreenCallback;
 
+              private void pauseAllVideos() {
+                  if (webView == null) return;
+
+                  webView.evaluateJavascript(
+                      "(function(){" +
+                      "document.querySelectorAll('video').forEach(" +
+                      "function(v){v.pause();}" +
+                      ");" +
+                      "})()",
+                      null
+                  );
+              }
+
               @Override
               public void onCreate(Bundle savedInstanceState) {
                   super.onCreate(savedInstanceState);
@@ -179,17 +192,14 @@ jobs:
                   settings.setJavaScriptEnabled(true);
                   settings.setDomStorageEnabled(true);
 
-                  // Disable all page zoom controls
                   settings.setSupportZoom(false);
                   settings.setBuiltInZoomControls(false);
                   settings.setDisplayZoomControls(false);
 
-                  // Keep normal page scale
                   settings.setLoadWithOverviewMode(false);
                   settings.setUseWideViewPort(false);
                   settings.setTextZoom(100);
 
-                  // Prevent unwanted scrolling effects
                   webView.setHorizontalScrollBarEnabled(false);
                   webView.setVerticalScrollBarEnabled(false);
                   webView.setOverScrollMode(View.OVER_SCROLL_NEVER);
@@ -243,12 +253,14 @@ jobs:
                   setContentView(root);
 
                   webView.loadUrl(
-                      "https://aliresaahmadi191576-cell.github.io/zh-movies/"
+                      "https://zh-movies.pages.dev/"
                   );
               }
 
               private void exitFullscreen() {
                   if (fullscreenView == null) return;
+
+                  pauseAllVideos();
 
                   root.removeView(fullscreenView);
                   fullscreenView = null;
@@ -275,10 +287,29 @@ jobs:
                       exitFullscreen();
 
                   } else if (webView.canGoBack()) {
+                      pauseAllVideos();
                       webView.goBack();
 
                   } else {
+                      pauseAllVideos();
                       super.onBackPressed();
+                  }
+              }
+
+              @Override
+              protected void onPause() {
+                  pauseAllVideos();
+                  super.onPause();
+                  if (webView != null) {
+                      webView.onPause();
+                  }
+              }
+
+              @Override
+              protected void onResume() {
+                  super.onResume();
+                  if (webView != null) {
+                      webView.onResume();
                   }
               }
 
@@ -292,6 +323,12 @@ jobs:
               }
           }
           EOF
+
+      - name: Install new Zh Movies app icon
+        run: |
+          rm -f android-app/app/src/main/res/drawable/ic_launcher.xml
+          mkdir -p android-app/app/src/main/res/drawable-nodpi
+          cp app-icon.png android-app/app/src/main/res/drawable-nodpi/ic_launcher.png
 
       - name: Build signed Release APK
         env:

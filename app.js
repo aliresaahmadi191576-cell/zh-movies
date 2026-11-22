@@ -2,7 +2,6 @@
 (() => {
   const $ = id => document.getElementById(id);
   const cfg = window.FIREBASE_CONFIG;
-
   const ADMIN_UID = "PLbmf0H2PYcPhX52spP8VpLRES53";
 
   const CATEGORIES = {
@@ -25,7 +24,6 @@
 
   const modal = $("modal");
   const adminButton = $("adminOpen");
-
   const adminMode =
     new URLSearchParams(location.search).get("admin") === "1";
 
@@ -33,9 +31,7 @@
     return !!user && user.uid === ADMIN_UID;
   }
 
-  // Create the edit panel inside the existing admin panel.
   const uploadPanel = $("uploadPanel");
-
   const editSection = document.createElement("section");
   editSection.id = "editSection";
   editSection.style.marginTop = "25px";
@@ -78,8 +74,7 @@
       <option value="mystery">🕵️ معمایی</option>
     </select>
 
-    <input id="editYear"
-      type="number" placeholder="سال">
+    <input id="editYear" type="number" placeholder="سال">
 
     <textarea id="editDescription"
       placeholder="توضیحات کوتاه"></textarea>
@@ -170,8 +165,8 @@
 
   const words = {
     اول: 1, دوم: 2, سوم: 3, چهارم: 4,
-    پنجم: 5, ششم: 6, هفتم: 7, هشتم: 8,
-    نهم: 9, دهم: 10
+    پنجم: 5, ششم: 6, هفتم: 7,
+    هشتم: 8, نهم: 9, دهم: 10
   };
 
   function episodeNumber(title) {
@@ -217,8 +212,348 @@
     return video;
   }
 
+  function playFullscreen(video) {
+    if (!video) return;
+
+    try {
+      const playing = video.play();
+
+      if (playing && typeof playing.catch === "function") {
+        playing.catch(() => {});
+      }
+    } catch (error) {
+      // Video controls remain available.
+    }
+
+    try {
+      if (typeof video.requestFullscreen === "function") {
+        const fullscreen = video.requestFullscreen();
+
+        if (
+          fullscreen &&
+          typeof fullscreen.catch === "function"
+        ) {
+          fullscreen.catch(() => {});
+        }
+      } else if (
+        typeof video.webkitEnterFullscreen === "function"
+      ) {
+        video.webkitEnterFullscreen();
+      }
+    } catch (error) {
+      // Fall back to inline playback.
+    }
+  }
+
+  // ========================================
+  // 🔥 تازه‌های ژ موویز
+  // ========================================
+
+  const latestSection = document.createElement("section");
+  latestSection.id = "zhLatest";
+
+  latestSection.style.cssText = `
+    margin: 22px 5%;
+    padding: 20px;
+    background: linear-gradient(135deg, #241034, #37164d);
+    border: 1px solid rgba(255, 211, 79, 0.35);
+    border-radius: 22px;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.25);
+    color: white;
+    direction: rtl;
+  `;
+
+  const latestHeading = document.createElement("div");
+
+  latestHeading.style.cssText = `
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  `;
+
+  const latestTitle = document.createElement("h2");
+  latestTitle.textContent = "🔥 تازه‌های ژ موویز";
+
+  latestTitle.style.cssText = `
+    margin: 0;
+    color: #ffd56a;
+    font-size: 21px;
+    font-weight: bold;
+  `;
+
+  const latestSubtitle = document.createElement("span");
+  latestSubtitle.textContent = "جدیدترین فیلم‌ها و سریال‌ها";
+
+  latestSubtitle.style.cssText = `
+    color: #d8c4e5;
+    font-size: 12px;
+  `;
+
+  latestHeading.append(latestTitle, latestSubtitle);
+
+  const latestGrid = document.createElement("div");
+  latestGrid.id = "zhLatestGrid";
+
+  latestGrid.style.cssText = `
+    display: grid;
+    grid-template-columns: repeat(
+      auto-fit,
+      minmax(min(100%, 145px), 1fr)
+    );
+    gap: 13px;
+  `;
+
+  latestSection.append(latestHeading, latestGrid);
+
+  const librarySection =
+    document.getElementById("library");
+
+  if (librarySection && librarySection.parentNode) {
+    librarySection.parentNode.insertBefore(
+      latestSection,
+      librarySection
+    );
+  } else {
+    const hero = document.querySelector(".hero");
+
+    if (hero) {
+      hero.insertAdjacentElement(
+        "afterend",
+        latestSection
+      );
+    } else {
+      latestSection.hidden = true;
+    }
+  }
+
+  function getCreatedTime(item) {
+    if (!item.createdAt) return 0;
+
+    if (typeof item.createdAt.toMillis === "function") {
+      return item.createdAt.toMillis();
+    }
+
+    if (typeof item.createdAt.seconds === "number") {
+      return item.createdAt.seconds * 1000;
+    }
+
+    return 0;
+  }
+
+  function renderLatest() {
+    latestGrid.replaceChildren();
+
+    if (!items.length) {
+      latestSection.hidden = true;
+      return;
+    }
+
+    const sorted = [...items].sort((a, b) => {
+      return getCreatedTime(b) - getCreatedTime(a);
+    });
+
+    const unique = new Map();
+
+    sorted.forEach(item => {
+      const name = item.kind === "series"
+        ? seriesName(item.title)
+        : item.title;
+
+      const key = item.kind + "|" + name;
+
+      if (!unique.has(key)) {
+        unique.set(key, {
+          ...item,
+          displayName: name
+        });
+      }
+    });
+
+    const latestItems = [...unique.values()].slice(0, 6);
+
+    if (!latestItems.length) {
+      latestSection.hidden = true;
+      return;
+    }
+
+    latestSection.hidden = false;
+
+    latestItems.forEach(item => {
+      const card = document.createElement("article");
+
+      card.style.cssText = `
+        background: #1d102b;
+        border: 1px solid #68417c;
+        border-radius: 15px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+      `;
+
+      const posterBox = document.createElement("div");
+
+      posterBox.style.cssText = `
+        width: 100%;
+        aspect-ratio: 3 / 4;
+        background: linear-gradient(
+          145deg,
+          #482066,
+          #170b24
+        );
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        color: #ffd56a;
+        font-size: 35px;
+      `;
+
+      if (item.poster) {
+        const img = document.createElement("img");
+        img.src = item.poster;
+        img.alt = item.displayName;
+        img.loading = "lazy";
+
+        img.style.cssText = `
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        `;
+
+        img.onerror = () => {
+          posterBox.replaceChildren();
+          posterBox.textContent = "🎬";
+        };
+
+        posterBox.append(img);
+      } else {
+        posterBox.textContent = "🎬";
+      }
+
+      const content = document.createElement("div");
+
+      content.style.cssText = `
+        padding: 11px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        flex: 1;
+      `;
+
+      const title = document.createElement("h3");
+      title.textContent = item.displayName;
+
+      title.style.cssText = `
+        color: white;
+        font-size: 14px;
+        line-height: 1.6;
+        margin: 0;
+        overflow-wrap: anywhere;
+      `;
+
+      const type = document.createElement("p");
+
+      type.textContent = item.kind === "series"
+        ? "📺 سریال"
+        : "🎬 فیلم";
+
+      type.style.cssText = `
+        color: #d6bddf;
+        font-size: 12px;
+        margin: 0;
+      `;
+
+      const category = document.createElement("p");
+
+      category.textContent =
+        CATEGORIES[item.category] || "ژ موویز";
+
+      category.style.cssText = `
+        color: #ffd56a;
+        font-size: 11px;
+        margin: 0;
+      `;
+
+      const button = document.createElement("button");
+      button.type = "button";
+      button.textContent = "▶ تماشا";
+
+      button.style.cssText = `
+        margin-top: auto;
+        padding: 9px 6px;
+        background: #ffd34f;
+        color: #241034;
+        border: none;
+        border-radius: 9px;
+        font-size: 12px;
+        font-weight: bold;
+        cursor: pointer;
+      `;
+
+      button.onclick = () => {
+        filter = "all";
+        categoryFilter = "all";
+        updateFilterButtons();
+        render();
+
+        const grid = $("grid");
+
+        if (!grid) return;
+
+        const cards = [...grid.querySelectorAll(".card")];
+
+        const matchingCard = cards.find(card => {
+          const heading = card.querySelector(".info h3");
+          return heading &&
+            heading.textContent === item.displayName;
+        });
+
+        if (matchingCard) {
+          matchingCard.scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+          });
+
+          matchingCard.style.outline =
+            "2px solid #ffd34f";
+
+          setTimeout(() => {
+            matchingCard.style.outline = "";
+          }, 2500);
+        } else {
+          grid.scrollIntoView({
+            behavior: "smooth"
+          });
+        }
+      };
+
+      content.append(
+        title,
+        type,
+        category,
+        button
+      );
+
+      card.append(posterBox, content);
+      latestGrid.append(card);
+    });
+  }
+
+  // ========================================
+  // 🎬 آرشیو و دسته‌بندی‌ها
+  // ========================================
+
   function render() {
-    const grid = $("grid");
+    const grid = categoryFilter === "all"
+      ? $("grid")
+      : $("categoryGrid");
+
+    if (!grid) return;
+
     grid.replaceChildren();
 
     const list = items.filter(x => {
@@ -258,7 +593,20 @@
           CATEGORIES[categoryFilter] +
           "» ثبت نشده است."
         : "هنوز محتوایی ثبت نشده است.";
+
+      const categoryEmpty = $("categoryEmpty");
+
+      if (categoryEmpty && categoryFilter !== "all") {
+        categoryEmpty.hidden = true;
+      }
+
       return;
+    }
+
+    const categoryEmpty = $("categoryEmpty");
+
+    if (categoryEmpty && categoryFilter !== "all") {
+      categoryEmpty.hidden = true;
     }
 
     groups.forEach(group => {
@@ -313,11 +661,14 @@
 
       if (categories.length) {
         const categoryText = document.createElement("p");
+
         categoryText.textContent = categories
           .map(x => CATEGORIES[x])
           .join(" • ");
+
         categoryText.style.color = "#ffd56a";
         categoryText.style.fontSize = "12px";
+
         info.append(categoryText);
       }
 
@@ -336,6 +687,7 @@
         const heading = document.createElement("p");
         heading.textContent =
           "قسمت موردنظر را انتخاب کنید:";
+
         info.append(heading);
 
         const buttons = document.createElement("div");
@@ -354,12 +706,11 @@
           btn.style.padding = "9px 12px";
 
           btn.onclick = () => {
-            playerArea.replaceChildren(makeVideo(x.url));
-            playerArea.querySelector("video")
-              .scrollIntoView({
-                behavior: "smooth",
-                block: "nearest"
-              });
+            const video = makeVideo(x.url);
+
+            playerArea.replaceChildren(video);
+
+            playFullscreen(video);
           };
 
           buttons.append(btn);
@@ -368,7 +719,10 @@
         info.append(buttons, playerArea);
       } else {
         const x = entries[0];
-        if (x.url) info.append(makeVideo(x.url));
+
+        if (x.url) {
+          info.append(makeVideo(x.url));
+        }
       }
 
       card.append(thumb, info);
@@ -376,7 +730,10 @@
     });
   }
 
-  // Admin editing list: each Firestore document is editable.
+  // ========================================
+  // ✏️ مدیریت آثار
+  // ========================================
+
   function renderAdminList() {
     const container = $("adminMovieList");
     if (!container) return;
@@ -416,8 +773,35 @@
 
       button.onclick = () => openEditor(item.id);
 
-      row.append(name, button);
-      container.append(row);
+const deleteButton = document.createElement("button");
+deleteButton.type = "button";
+deleteButton.textContent = "🗑️ حذف";
+deleteButton.style.background = "#b42335";
+deleteButton.style.color = "#fff";
+deleteButton.style.padding = "8px 10px";
+deleteButton.style.borderRadius = "8px";
+
+deleteButton.onclick = async () => {
+  if (!adminMode || !isAdmin(auth.currentUser)) {
+    alert("اجازه حذف ندارید.");
+    return;
+  }
+
+  if (!confirm(`آیا از حذف «${item.title}» مطمئنی؟`)) {
+    return;
+  }
+
+  try {
+    deleteButton.disabled = true;
+    await db.collection("movies").doc(item.id).delete();
+    alert("فیلم با موفقیت حذف شد.");
+  } catch (error) {
+    deleteButton.disabled = false;
+    alert("حذف انجام نشد: " + error.message);
+  }
+};
+
+row.append(name, button, deleteButton);      container.append(row);
     });
   }
 
@@ -455,9 +839,11 @@
   editForm.onsubmit = async e => {
     e.preventDefault();
 
-    if (!adminMode ||
-        !isAdmin(auth.currentUser) ||
-        !editingId) {
+    if (
+      !adminMode ||
+      !isAdmin(auth.currentUser) ||
+      !editingId
+    ) {
       $("editStatus").textContent =
         "اجازه ویرایش ندارید.";
       return;
@@ -492,7 +878,8 @@
     );
 
     button.disabled = true;
-    $("editStatus").textContent = "در حال ذخیره تغییرات…";
+    $("editStatus").textContent =
+      "در حال ذخیره تغییرات…";
 
     try {
       await db.collection("movies").doc(editingId).update({
@@ -518,6 +905,10 @@
       button.disabled = false;
     }
   };
+
+  // ========================================
+  // 🔥 اتصال Firebase
+  // ========================================
 
   if (!cfg || !cfg.apiKey || !cfg.projectId) {
     $("notice").textContent =
@@ -550,7 +941,8 @@
           year: x.year || "",
           poster: x.posterUrl || x.poster || "",
           url: x.videoUrl || x.url || "",
-          description: x.description || ""
+          description: x.description || "",
+          createdAt: x.createdAt || null
         };
       });
 
@@ -558,6 +950,7 @@
         items.length + " مورد در آرشیو";
 
       render();
+      renderLatest();
       renderAdminList();
     },
     () => {
@@ -573,6 +966,7 @@
 
   $("login").onsubmit = async e => {
     e.preventDefault();
+
     if (!adminMode) return;
 
     try {
@@ -653,7 +1047,9 @@
         createdBy: user.uid
       });
 
-      status.textContent = "با موفقیت منتشر شد.";
+      status.textContent =
+        "با موفقیت منتشر شد.";
+
       $("upload").reset();
     } catch (error) {
       status.textContent =

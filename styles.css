@@ -36,12 +36,12 @@ button, .yellow, .purple {
 
 /* HEADER */
 header {
-  height: 72px;
+  height: 66px;
   background: #180d27;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 7%;
+  padding: 0 6%;
   border-bottom: 1px solid #b18a4d;
   box-shadow: 0 5px 25px #0007;
 }
@@ -64,29 +64,42 @@ header {
   margin-left: 8px;
 }
 
-/* HERO */
+/* COMPACT CINEMATIC HERO */
 .hero {
-  margin: 28px 5%;
-  padding: 55px 8%;
-  min-height: 370px;
-  border-radius: 26px;
-  background: linear-gradient(120deg, #210e35, #582b7c);
+  position: relative;
+  isolation: isolate;
+  margin: 20px 5% 12px;
+  padding: 30px 6%;
+  min-height: 265px;
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 15% 35%, #9149d455, transparent 45%),
+    linear-gradient(120deg, #210e35, #582b7c);
   color: white;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 22px;
   overflow: hidden;
   border: 1px solid #b18a4d;
-  box-shadow: 0 15px 40px #0008;
+  box-shadow: 0 12px 32px #0007;
+}
+
+.hero > div:first-child {
+  position: relative;
+  z-index: 2;
+  min-width: 0;
 }
 
 .hero small, #library small {
-  color: #c9a6e9;
+  color: #d5b2f1;
 }
 
 .hero h1 {
-  font-size: clamp(35px, 5vw, 58px);
-  line-height: 1.4;
+  font-size: clamp(29px, 4vw, 46px);
+  line-height: 1.45;
+  margin: 12px 0;
+  letter-spacing: -0.5px;
 }
 
 .hero h1 span,
@@ -96,6 +109,9 @@ header {
 
 .hero p {
   color: #eadcf3;
+  margin: 10px 0 18px;
+  font-size: 14px;
+  line-height: 1.9;
 }
 
 .yellow {
@@ -103,6 +119,17 @@ header {
   background: linear-gradient(135deg, #ffe9a5, #e9b840);
   color: #261132;
   text-decoration: none;
+  box-shadow: 0 5px 15px #0003;
+}
+
+.hero .yellow {
+  padding: 11px 22px;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.hero .yellow:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px #0005;
 }
 
 .purple,
@@ -112,18 +139,20 @@ header {
 }
 
 .poster-art {
-  width: 160px;
-  height: 205px;
+  flex: 0 0 145px;
+  width: 145px;
+  height: 185px;
   background: linear-gradient(140deg, #ffd34f, #bd7cdb);
+  border: 1px solid #ffe7a2;
   border-radius: 18px;
   display: grid;
   place-content: center;
   text-align: center;
   color: #28183b;
-  font-size: 45px;
+  font-size: 43px;
   font-weight: 800;
-  transform: rotate(7deg);
-  box-shadow: 0 20px 45px #10051c66;
+  transform: rotate(6deg);
+  box-shadow: 0 18px 38px #10051c66;
 }
 
 .poster-art small {
@@ -133,19 +162,21 @@ header {
 
 /* MOVIE LIBRARY */
 #library {
-  padding: 35px 7% 80px;
+  padding: 20px 7% 80px;
 }
 
 .heading {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 15px;
+  gap: 12px;
   flex-wrap: wrap;
 }
 
 .heading h2 {
   color: white;
+  margin: 8px 0;
+  font-size: clamp(19px, 2.5vw, 26px);
 }
 
 .filter {
@@ -160,7 +191,7 @@ header {
   font-size: 13px;
 }
 
-/* SMALL HORIZONTAL POSTERS */
+/* MOVIE CARDS */
 .grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -331,20 +362,61 @@ footer {
 
 /* MOBILE */
 @media (max-width: 600px) {
+  header {
+    height: 60px;
+  }
+
   .hero {
-    padding: 35px 25px;
-    min-height: 350px;
+    margin: 14px 4% 8px;
+    padding: 24px 20px;
+    min-height: 235px;
+    border-radius: 20px;
+    gap: 8px;
+  }
+
+  .hero h1 {
+    font-size: clamp(25px, 7vw, 35px);
+    line-height: 1.5;
+    margin: 10px 0;
+  }
+
+  .hero p {
+    font-size: 12px;
+    margin: 8px 0 15px;
+  }
+
+  .hero .yellow {
+    font-size: 13px;
+    padding: 10px 16px;
   }
 
   .poster-art {
-    opacity: .25;
     position: absolute;
-    left: 0;
+    left: -12px;
+    top: 35px;
+    width: 110px;
+    height: 150px;
+    opacity: .18;
+    transform: rotate(12deg);
+    pointer-events: none;
+    z-index: 0;
   }
 
-  .hero > div:first-child {
-    position: relative;
-    z-index: 1;
+  #library {
+    padding: 15px 5% 80px;
+  }
+
+  .heading {
+    gap: 8px;
+  }
+
+  .heading h2 {
+    font-size: 19px;
+  }
+
+  .filter {
+    padding: 9px 13px;
+    font-size: 12px;
   }
 
   .grid {
@@ -367,5 +439,65 @@ footer {
 
   .card {
     border-radius: 12px;
+  }
+}
+
+.hero {
+  background-image:
+    linear-gradient(
+      270deg,
+      rgba(16, 5, 30, 0.45) 0%,
+      rgba(16, 5, 30, 0.05) 65%
+    ),
+    url("hero-bg.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.poster-art {
+  display: none;
+}
+
+/* 🔥 تازه‌های ژ موویز - حالت جمع‌وجور */
+
+#zhLatest {
+  margin: 12px auto !important;
+  padding: 14px !important;
+  width: 94% !important;
+  max-width: 1100px !important;
+  box-sizing: border-box;
+}
+
+#zhLatest h2 {
+  font-size: 17px !important;
+}
+
+#zhLatestGrid {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+}
+
+#zhLatestGrid article {
+  min-width: 0 !important;
+}
+
+#zhLatestGrid article > div:first-child {
+  aspect-ratio: 3 / 3.5 !important;
+}
+
+#zhLatestGrid article h3 {
+  font-size: 12px !important;
+}
+
+#zhLatestGrid article button {
+  padding: 7px 4px !important;
+  font-size: 11px !important;
+}
+
+@media (min-width: 700px) {
+  #zhLatestGrid {
+    grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
   }
 }
