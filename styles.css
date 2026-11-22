@@ -501,3 +501,29 @@ footer {
     grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
   }
 }
+/* ZH Movies - Full rectangular posters */
+
+#zhLatestGrid {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 12px !important;
+}
+
+#zhLatestGrid article > div:first-child {
+  width: 100% !important;
+  aspect-ratio: 16 / 9 !important;
+  height: auto !important;
+  overflow: hidden !important;
+}
+
+#zhLatestGrid article > div:first-child img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+  display: block !important;
+}
+
+@media (min-width: 700px) {
+  #zhLatestGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+}
