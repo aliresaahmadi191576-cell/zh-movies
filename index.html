@@ -4,79 +4,437 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#24143a">
-<title>Zh Movies</title>
+<meta name="theme-color" content="#10091b">
+<title>Zh Movies | ژ موویز</title>
+
 <link rel="stylesheet" href="styles.css">
+
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+
+<style>
+/* THREE-TAB BOTTOM NAVIGATION */
+body {
+  padding-bottom: 85px;
+}
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  display: flex;
+  align-items: stretch;
+  background: #1b1029;
+  border-top: 1px solid #b18a4d;
+  padding: 8px 8px max(8px, env(safe-area-inset-bottom));
+  box-shadow: 0 -5px 25px #0008;
+}
+
+.nav-item {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  color: #c4b0d3;
+  border: 0;
+  border-radius: 12px;
+  padding: 8px 4px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.nav-item.active {
+  color: #ffd56a;
+  background: #39224f;
+}
+
+.nav-item span {
+  display: block;
+  font-size: 22px;
+  margin-bottom: 3px;
+}
+
+#categoriesPage,
+#aboutPage {
+  display: none;
+  min-height: 60vh;
+  padding: 28px 7% 100px;
+}
+
+.page-title {
+  color: #ffd56a;
+  font-size: 24px;
+}
+
+.category-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 22px;
+}
+
+.category-btn {
+  background: #302040;
+  color: #ffd56a;
+  border: 1px solid #79588e;
+  border-radius: 15px;
+  padding: 22px 8px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.category-btn:active {
+  background: #583178;
+}
+
+.about-card {
+  max-width: 550px;
+  margin: 20px auto;
+  padding: 30px 22px;
+  background: linear-gradient(145deg, #301944, #1c102b);
+  border: 1px solid #b18a4d;
+  border-radius: 22px;
+  text-align: center;
+  box-shadow: 0 12px 35px #0006;
+}
+
+.about-logo {
+  font-size: 42px;
+  color: #ffd56a;
+  font-weight: 800;
+}
+
+.about-card h2 {
+  color: #ffd56a;
+}
+
+.about-card p {
+  color: #e4d5ee;
+  line-height: 2.2;
+}
+
+.about-card small {
+  color: #c4b0d3;
+}
+
+/* Keep admin modal above navigation */
+.modal {
+  z-index: 100;
+}
+</style>
 </head>
+
 <body>
+
+<!-- HEADER -->
 <header>
-<a class="logo" href="#"><b>ZH</b> Zh Movies</a>
-<button id="adminOpen" hidden>مدیریت</button>
+  <a class="logo" href="#" id="logoHome">
+    <b>ZH</b> Zh Movies
+  </a>
+  <button id="adminOpen" hidden>مدیریت</button>
 </header>
-<main>
-<section class="hero">
-<div>
-<small>دنیای فیلم و سریال</small>
-<h1>قصه‌ی بعدی<br><span>از اینجا شروع می‌شه.</span></h1>
-<p>آرشیو فیلم‌ها و سریال‌های موردعلاقه‌ات</p>
-<a class="yellow" href="#library">دیدن آرشیو ←</a>
-</div>
-<div class="poster-art">ZH<br><small>MOVIE NIGHT</small></div>
-</section>
-<section id="library">
-<div class="heading">
-<h2>کتابخانه <span>Zh Movies</span></h2>
-<div>
-<button class="filter active" data-filter="all">همه</button>
-<button class="filter" data-filter="movie">فیلم</button>
-<button class="filter" data-filter="series">سریال</button>
-</div>
-</div>
-<p id="notice">در حال بارگذاری آرشیو…</p>
-<div id="grid" class="grid"></div>
-</section>
+
+<!-- HOME -->
+<main id="homePage">
+
+  <section class="hero">
+    <div>
+      <small>دنیای فیلم و سریال</small>
+      <h1>
+        قصه‌ی بعدی<br>
+        <span>از اینجا شروع می‌شه.</span>
+      </h1>
+      <p>آرشیو فیلم‌ها و سریال‌های موردعلاقه‌ات</p>
+      <a class="yellow" href="#library">دیدن آرشیو ←</a>
+    </div>
+
+    <div class="poster-art">
+      ZH<br>
+      <small>MOVIE NIGHT</small>
+    </div>
+  </section>
+
+  <section id="library">
+    <div class="heading">
+      <h2>کتابخانه <span>Zh Movies</span></h2>
+
+      <div>
+        <button class="filter active" data-filter="all">
+          همه
+        </button>
+        <button class="filter" data-filter="movie">
+          فیلم
+        </button>
+        <button class="filter" data-filter="series">
+          سریال
+        </button>
+      </div>
+    </div>
+
+    <p id="notice">در حال بارگذاری آرشیو…</p>
+    <div id="grid" class="grid"></div>
+  </section>
+
 </main>
-<footer>ساخته‌شده با ♥ برای Zh Movies</footer>
 
-<div id="modal" class="modal">
-<section class="panel">
-<button id="close" class="close">×</button>
-<small>پنل مدیریت</small>
-<h2>افزودن فیلم و سریال</h2>
+<!-- CATEGORIES -->
+<section id="categoriesPage">
+  <h2 class="page-title">🎞️ دسته‌بندی‌ها</h2>
+  <p>دوست داری چی تماشا کنی؟ 💜</p>
 
-<form id="login">
-<input id="email" type="email" placeholder="ایمیل مدیر" required>
-<input id="password" type="password" placeholder="رمز عبور" required>
-<button class="purple" type="submit">ورود</button>
-</form>
+  <div class="category-list">
+    <button class="category-btn" data-category="all">
+      🎬 همه آثار
+    </button>
 
-<div id="uploadPanel" hidden>
-<p id="who"></p>
-<button id="logout">خروج</button>
-<hr>
-<form id="upload">
-<input id="title" placeholder="نام فیلم یا سریال" required maxlength="90">
-<div class="row">
-<select id="kind">
-<option value="movie">فیلم</option>
-<option value="series">سریال</option>
-</select>
-<input id="year" type="number" placeholder="سال">
-</div>
-<textarea id="description" placeholder="توضیحات کوتاه"></textarea>
-<input id="poster" type="url" placeholder="لینک عکس پوستر (https://...)">
-<input id="video" type="url" placeholder="لینک ویدیو (https://...)" required>
-<button class="yellow" type="submit">ذخیره و انتشار</button>
-<p id="status"></p>
-</form>
-</div>
+    <button class="category-btn" data-category="movie">
+      🍿 فیلم‌ها
+    </button>
+
+    <button class="category-btn" data-category="series">
+      📺 سریال‌ها
+    </button>
+  </div>
 </section>
+
+<!-- ABOUT US -->
+<section id="aboutPage">
+
+  <div class="about-card">
+    <div class="about-logo">♛ ZH</div>
+
+    <h2>💜 درباره ژ موویز</h2>
+
+    <p>
+      به ژ موویز خوش آمدید!
+    </p>
+
+    <p>
+      ژ موویز دنیایی برای کشف و تماشای
+      فیلم‌ها و سریال‌های جذاب است.
+    </p>
+
+    <p>
+      هدف ما ساختن یک تجربه سینمایی زیبا،
+      ساده و لذت‌بخش برای علاقه‌مندان
+      به فیلم و سریال است.
+    </p>
+
+    <p>
+      🎬 با ژ موویز، هر روز یک قصه تازه!
+    </p>
+
+    <small>Zh Movies 💜💛</small>
+  </div>
+
+</section>
+
+<!-- FOOTER -->
+<footer>
+  ساخته‌شده با ♥ برای Zh Movies
+</footer>
+
+<!-- BOTTOM NAVIGATION -->
+<nav class="bottom-nav" aria-label="منوی اصلی">
+
+  <button
+    class="nav-item active"
+    id="homeTab"
+    type="button"
+    aria-current="page">
+    <span>🏠</span>
+    هوم
+  </button>
+
+  <button
+    class="nav-item"
+    id="categoriesTab"
+    type="button">
+    <span>🎞️</span>
+    دسته‌بندی
+  </button>
+
+  <button
+    class="nav-item"
+    id="aboutTab"
+    type="button">
+    <span>💜</span>
+    درباره ما
+  </button>
+
+</nav>
+
+<!-- ADMIN MODAL -->
+<div id="modal" class="modal">
+  <section class="panel">
+
+    <button id="close" class="close">×</button>
+
+    <small>پنل مدیریت</small>
+    <h2>افزودن فیلم و سریال</h2>
+
+    <!-- LOGIN -->
+    <form id="login">
+      <input
+        id="email"
+        type="email"
+        placeholder="ایمیل مدیر"
+        required>
+
+      <input
+        id="password"
+        type="password"
+        placeholder="رمز عبور"
+        required>
+
+      <button class="purple" type="submit">
+        ورود
+      </button>
+    </form>
+
+    <!-- UPLOAD PANEL -->
+    <div id="uploadPanel" hidden>
+
+      <p id="who"></p>
+      <button id="logout">خروج</button>
+
+      <hr>
+
+      <form id="upload">
+
+        <input
+          id="title"
+          placeholder="نام فیلم یا سریال"
+          required
+          maxlength="90">
+
+        <div class="row">
+          <select id="kind">
+            <option value="movie">فیلم</option>
+            <option value="series">سریال</option>
+          </select>
+
+          <input
+            id="year"
+            type="number"
+            placeholder="سال">
+        </div>
+
+        <textarea
+          id="description"
+          placeholder="توضیحات کوتاه"></textarea>
+
+        <input
+          id="poster"
+          type="url"
+          placeholder="لینک عکس پوستر (https://...)">
+
+        <input
+          id="video"
+          type="url"
+          placeholder="لینک ویدیو (https://...)"
+          required>
+
+        <button class="yellow" type="submit">
+          ذخیره و انتشار
+        </button>
+
+        <p id="status"></p>
+      </form>
+
+    </div>
+  </section>
 </div>
 
+<!-- FIREBASE & MOVIE LOGIC -->
 <script src="firebase-config.js"></script>
 <script src="app.js"></script>
+
+<!-- PAGE NAVIGATION -->
+<script>
+(function () {
+  const pages = {
+    home: document.getElementById("homePage"),
+    categories: document.getElementById("categoriesPage"),
+    about: document.getElementById("aboutPage")
+  };
+
+  const tabs = {
+    home: document.getElementById("homeTab"),
+    categories: document.getElementById("categoriesTab"),
+    about: document.getElementById("aboutTab")
+  };
+
+  function showPage(pageName) {
+    Object.keys(pages).forEach(function (name) {
+      pages[name].style.display =
+        name === pageName ? "block" : "none";
+
+      tabs[name].classList.toggle(
+        "active",
+        name === pageName
+      );
+
+      if (name === pageName) {
+        tabs[name].setAttribute(
+          "aria-current",
+          "page"
+        );
+      } else {
+        tabs[name].removeAttribute(
+          "aria-current"
+        );
+      }
+    });
+
+    window.scrollTo(0, 0);
+  }
+
+  tabs.home.addEventListener("click", function () {
+    showPage("home");
+  });
+
+  tabs.categories.addEventListener("click", function () {
+    showPage("categories");
+  });
+
+  tabs.about.addEventListener("click", function () {
+    showPage("about");
+  });
+
+  document.getElementById("logoHome")
+    .addEventListener("click", function (event) {
+      event.preventDefault();
+      showPage("home");
+    });
+
+  document.querySelectorAll(".category-btn")
+    .forEach(function (button) {
+
+      button.addEventListener("click", function () {
+        const category = button.dataset.category;
+
+        showPage("home");
+
+        const filter = document.querySelector(
+          '.filter[data-filter="' + category + '"]'
+        );
+
+        if (filter) {
+          filter.click();
+        }
+
+        document.getElementById("library")
+          .scrollIntoView({
+            behavior: "smooth"
+          });
+      });
+
+    });
+})();
+</script>
+
 </body>
 </html>
