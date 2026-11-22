@@ -1,21 +1,214 @@
+
 (() => {
-const $=id=>document.getElementById(id),cfg=window.FIREBASE_CONFIG;
-const ready=cfg&&cfg.apiKey!=="PASTE_API_KEY"&&cfg.storageBucket!=="PASTE_STORAGE_BUCKET"&&cfg.appId!=="PASTE_WEB_APP_ID";
-let auth,storage,items=[],filter="all";
-const modal=$("modal");
-$("adminOpen").onclick=()=>modal.classList.add("open");$("close").onclick=()=>modal.classList.remove("open");
-document.querySelectorAll(".filter").forEach(b=>b.onclick=()=>{filter=b.dataset.filter;document.querySelectorAll(".filter").forEach(x=>x.classList.toggle("active",x===b));render()});
-function render(){let grid=$("grid");grid.innerHTML="";let list=items.filter(x=>filter==="all"||x.kind===filter);if(!list.length){grid.textContent="هنوز محتوایی در این بخش ثبت نشده است.";return}list.forEach(x=>{let c=document.createElement("article");c.className="card";let t=document.createElement("div");t.className="thumb";if(x.poster){let im=document.createElement("img");im.src=x.poster;im.alt=x.title;t.append(im)}else t.textContent="✦";let d=document.createElement("div");d.className="info";let h=document.createElement("h3");h.textContent=x.title;let p=document.createElement("p");p.textContent=(x.kind==="series"?"سریال":"فیلم")+" • "+(x.year||"");let a=document.createElement("a");a.href=x.url;a.target="_blank";a.rel="noopener";a.textContent="پخش ویدیو";d.append(h,p,a);c.append(t,d);grid.append(c)})}
-if(!ready){$("notice").textContent="برای فعال‌شدن سایت، تنظیمات Web app را در firebase-config.js وارد کنید.";return}
-try{firebase.initializeApp(cfg);auth=firebase.auth();storage=firebase.storage()}catch(e){$("notice").textContent="تنظیمات Firebase معتبر نیست.";return}
-async function load(){try{let r=await storage.ref("videos").listAll(),vids=r.items.filter(x=>!x.fullPath.includes("/posters/"));items=await Promise.all(vids.map(async ref=>{let [m,url]=await Promise.all([ref.getMetadata(),ref.getDownloadURL()]),c=m.customMetadata||{},poster="";if(c.posterPath){try{poster=await storage.ref(c.posterPath).getDownloadURL()}catch{}}return{title:c.title||ref.name,kind:c.kind||"movie",year:c.year,poster,url}}));$("notice").textContent=items.length+" مورد در آرشیو";render()}catch(e){$("notice").textContent="خطا در خواندن Storage؛ تنظیمات و قوانین را بررسی کنید."}}
-load();
-auth.onAuthStateChanged(u=>{$("login").hidden=!!u;$("uploadPanel").hidden=!u;if(u)$("who").textContent=u.email});
-$("login").onsubmit=async e=>{e.preventDefault();try{await auth.signInWithEmailAndPassword($("email").value,$("password").value)}catch(err){alert("ورود ناموفق: "+err.message)}};
-$("logout").onclick=()=>auth.signOut();
-$("upload").onsubmit=e=>{e.preventDefault();let f=$("video").files[0],u=auth.currentUser;if(!u||!f)return;if(!f.type.startsWith("video/")){alert("فایل ویدیویی انتخاب کنید");return}
-(async()=>{try{let id=Date.now()+"-"+Math.random().toString(36).slice(2,7),posterPath="",pf=$("poster").files[0];if(pf){let pr=storage.ref("videos/posters/"+id+"-"+pf.name.replace(/[^a-z0-9._-]/gi,"_"));await pr.put(pf);posterPath=pr.fullPath}
-let ext=(f.name.split(".").pop()||"mp4").replace(/[^a-z0-9]/gi,""),ref=storage.ref("videos/"+id+"."+ext),task=ref.put(f,{contentType:f.type,customMetadata:{title:$("title").value.trim(),kind:$("kind").value,year:$("year").value,description:$("description").value,posterPath,uploadedBy:u.uid}});
-task.on("state_changed",s=>{$("progress").style.width=Math.round(s.bytesTransferred/s.totalBytes*100)+"%";$("status").textContent="در حال آپلود..."},err=>$("status").textContent="خطا: "+err.message,async()=>{$("status").textContent="آپلود با موفقیت انجام شد";$("upload").reset();await load()})
-}catch(err){$("status").textContent="خطا: "+err.message}})()};
+  const $ = id => document.getElementById(id);
+  const cfg = window.FIREBASE_CONFIG;
+  let auth, db, items = [], filter = "all";
+
+  const modal = $("modal");
+  $("adminOpen").onclick = () => modal.classList.add("open");
+  $("close").onclick = () => modal.classList.remove("open");
+  modal.onclick = e => {
+    if (e.target === modal) modal.classList.remove("open");
+  };
+
+  document.querySelectorAll(".filter").forEach(b => {
+    b.onclick = () => {
+      filter = b.dataset.filter;
+      document.querySelectorAll(".filter").forEach(x => {
+        x.classList.toggle("active", x === b);
+      });
+      render();
+    };
+  });
+
+  function render() {
+    const grid = $("grid");
+    grid.replaceChildren();
+
+    const list = items.filter(x =>
+      filter === "all" || x.kind === filter
+    );
+
+    if (!list.length) {
+      grid.textContent = "هنوز محتوایی در این بخش ثبت نشده است.";
+      return;
+    }
+
+    list.forEach(x => {
+      const card = document.createElement("article");
+      card.className = "card";
+
+      const thumb = document.createElement("div");
+      thumb.className = "thumb";
+
+      if (x.poster) {
+        const img = document.createElement("img");
+        img.src = x.poster;
+        img.alt = x.title;
+        img.loading = "lazy";
+        img.onerror = () => {
+          thumb.textContent = "✦";
+        };
+        thumb.append(img);
+      } else {
+        thumb.textContent = "✦";
+      }
+
+      const info = document.createElement("div");
+      info.className = "info";
+
+      const title = document.createElement("h3");
+      title.textContent = x.title;
+
+      const details = document.createElement("p");
+      details.textContent =
+        (x.kind === "series" ? "سریال" : "فیلم") +
+        (x.year ? " • " + x.year : "");
+
+      info.append(title, details);
+
+      if (x.description) {
+        const desc = document.createElement("p");
+        desc.textContent = x.description;
+        info.append(desc);
+      }
+
+      if (x.url) {
+        const link = document.createElement("a");
+        link.href = x.url;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.textContent = "تماشای ویدیو";
+        info.append(link);
+      }
+
+      card.append(thumb, info);
+      grid.append(card);
+    });
+  }
+
+  if (!cfg || !cfg.apiKey || !cfg.projectId) {
+    $("notice").textContent =
+      "تنظیمات Firebase تکمیل نشده است.";
+    return;
+  }
+
+  try {
+    firebase.initializeApp(cfg);
+    auth = firebase.auth();
+    db = firebase.firestore();
+  } catch (e) {
+    $("notice").textContent =
+      "اتصال به Firebase برقرار نشد.";
+    return;
+  }
+
+  db.collection("movies").onSnapshot(
+    snapshot => {
+      items = snapshot.docs.map(doc => {
+        const x = doc.data();
+        return {
+          title: x.title || "بدون عنوان",
+          kind:
+            x.kind === "series" || x.type === "series"
+              ? "series"
+              : "movie",
+          year: x.year || "",
+          poster: x.posterUrl || x.poster || "",
+          url: x.videoUrl || x.url || "",
+          description: x.description || ""
+        };
+      });
+
+      $("notice").textContent =
+        items.length + " مورد در آرشیو";
+      render();
+    },
+    error => {
+      $("notice").textContent =
+        "آرشیو قابل خواندن نیست؛ قوانین Firestore را بررسی کنید.";
+    }
+  );
+
+  auth.onAuthStateChanged(user => {
+    $("login").hidden = !!user;
+    $("uploadPanel").hidden = !user;
+
+    if (user) {
+      $("who").textContent = user.email;
+    }
+  });
+
+  $("login").onsubmit = async e => {
+    e.preventDefault();
+
+    try {
+      await auth.signInWithEmailAndPassword(
+        $("email").value,
+        $("password").value
+      );
+    } catch (error) {
+      alert("ورود ناموفق: " + error.message);
+    }
+  };
+
+  $("logout").onclick = () => auth.signOut();
+
+  $("upload").onsubmit = async e => {
+    e.preventDefault();
+
+    const user = auth.currentUser;
+    const status = $("status");
+
+    if (!user) {
+      status.textContent = "ابتدا وارد شوید.";
+      return;
+    }
+
+    const title = $("title").value.trim();
+    const videoUrl = $("video").value.trim();
+    const posterUrl = $("poster").value.trim();
+
+    if (
+      !title ||
+      !/^https:\/\//i.test(videoUrl) ||
+      (posterUrl && !/^https:\/\//i.test(posterUrl))
+    ) {
+      status.textContent =
+        "لینک‌ها باید با https:// شروع شوند.";
+      return;
+    }
+
+    const button = $("upload").querySelector(
+      'button[type="submit"]'
+    );
+    button.disabled = true;
+    status.textContent = "در حال ذخیره…";
+
+    try {
+      await db.collection("movies").add({
+        title: title,
+        type: $("kind").value,
+        kind: $("kind").value,
+        year: $("year").value.trim(),
+        description: $("description").value.trim(),
+        posterUrl: posterUrl,
+        videoUrl: videoUrl,
+        createdAt:
+          firebase.firestore.FieldValue.serverTimestamp(),
+        createdBy: user.uid
+      });
+
+      status.textContent = "با موفقیت منتشر شد.";
+      $("upload").reset();
+    } catch (error) {
+      status.textContent =
+        "ذخیره نشد: " +
+        (error.code === "permission-denied"
+          ? "دسترسی مدیر در قوانین Firestore مجاز نیست."
+          : error.message);
+    } finally {
+      button.disabled = false;
+    }
+  };
 })();
