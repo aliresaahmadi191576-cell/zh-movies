@@ -1,22 +1,77 @@
 <!doctype html>
-<html lang="fa" dir="rtl"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#24143a"><title>Zh Movies</title><link rel="stylesheet" href="styles.css">
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#24143a">
+<title>Zh Movies</title>
+<link rel="stylesheet" href="styles.css">
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
-</head><body>
-<header><a class="logo" href="#"><b>ZH</b> Zh Movies</a><button id="adminOpen">مدیریت</button></header>
-<main><section class="hero"><div><small>دنیای فیلم و سریال</small><h1>قصه‌ی بعدی<br><span>از اینجا شروع می‌شه.</span></h1><p>آرشیو فیلم‌ها و سریال‌های موردعلاقه‌ات</p><a class="yellow" href="#library">دیدن آرشیو ←</a></div><div class="poster-art">ZH<br><small>MOVIE NIGHT</small></div></section>
-<section id="library"><div class="heading"><h2>کتابخانه <span>Zh Movies</span></h2><div><button class="filter active" data-filter="all">همه</button><button class="filter" data-filter="movie">فیلم</button><button class="filter" data-filter="series">سریال</button></div></div><p id="notice">برای فعال‌شدن آرشیو، تنظیمات Firebase را وارد کنید.</p><div id="grid" class="grid"></div></section></main>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+</head>
+<body>
+<header>
+<a class="logo" href="#"><b>ZH</b> Zh Movies</a>
+<button id="adminOpen">مدیریت</button>
+</header>
+<main>
+<section class="hero">
+<div>
+<small>دنیای فیلم و سریال</small>
+<h1>قصه‌ی بعدی<br><span>از اینجا شروع می‌شه.</span></h1>
+<p>آرشیو فیلم‌ها و سریال‌های موردعلاقه‌ات</p>
+<a class="yellow" href="#library">دیدن آرشیو ←</a>
+</div>
+<div class="poster-art">ZH<br><small>MOVIE NIGHT</small></div>
+</section>
+<section id="library">
+<div class="heading">
+<h2>کتابخانه <span>Zh Movies</span></h2>
+<div>
+<button class="filter active" data-filter="all">همه</button>
+<button class="filter" data-filter="movie">فیلم</button>
+<button class="filter" data-filter="series">سریال</button>
+</div>
+</div>
+<p id="notice">در حال بارگذاری آرشیو…</p>
+<div id="grid" class="grid"></div>
+</section>
+</main>
 <footer>ساخته‌شده با ♥ برای Zh Movies</footer>
-<div id="modal" class="modal"><section class="panel"><button id="close" class="close">×</button><small>پنل مدیریت</small><h2>ورود مدیر</h2>
-<form id="login"><input id="email" type="email" placeholder="ایمیل مدیر" required><input id="password" type="password" placeholder="رمز عبور" required><button class="purple">ورود</button></form>
-<div id="uploadPanel" hidden><p id="who"></p><button id="logout">خروج</button><hr>
-<form id="upload"><input id="title" placeholder="نام فیلم یا سریال" required maxlength="90">
-<div class="row"><select id="kind"><option value="movie">فیلم</option><option value="series">سریال</option></select><input id="year" type="number" placeholder="سال"></div>
+<div id="modal" class="modal">
+<section class="panel">
+<button id="close" class="close">×</button>
+<small>پنل مدیریت</small>
+<h2>افزودن فیلم و سریال</h2>
+<form id="login">
+<input id="email" type="email" placeholder="ایمیل مدیر" required>
+<input id="password" type="password" placeholder="رمز عبور" required>
+<button class="purple">ورود</button>
+</form>
+<div id="uploadPanel" hidden>
+<p id="who"></p>
+<button id="logout">خروج</button>
+<hr>
+<form id="upload">
+<input id="title" placeholder="نام فیلم یا سریال" required maxlength="90">
+<div class="row">
+<select id="kind">
+<option value="movie">فیلم</option>
+<option value="series">سریال</option>
+</select>
+<input id="year" type="number" placeholder="سال">
+</div>
 <textarea id="description" placeholder="توضیحات کوتاه"></textarea>
-<label class="pick">انتخاب ویدیو از گالری<input id="video" type="file" accept="video/*" required></label>
-<label class="pick gold">انتخاب پوستر (اختیاری)<input id="poster" type="file" accept="image/*"></label>
-<div class="bar"><div id="progress"></div></div><button class="yellow" type="submit">آپلود و انتشار</button><p id="status"></p></form></div></section></div>
-<script src="firebase-config.js"></script><script src="app.js"></script></body></html>
+<input id="poster" type="url" placeholder="لینک عکس پوستر (https://...)">
+<input id="video" type="url" placeholder="لینک ویدیو (https://...)" required>
+<button class="yellow" type="submit">ذخیره و انتشار</button>
+<p id="status"></p>
+</form>
+</div>
+</section>
+</div>
+<script src="firebase-config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
