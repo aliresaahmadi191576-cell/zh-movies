@@ -19,6 +19,12 @@
   let items = [];
   let filter = "all";
   let categoryFilter = "all";
+  // ⭐ Zh Movies Rating System
+let movieRatings = {};
+
+function getMovieRating(movieId) {
+  return movieRatings[movieId] || 0;
+}
   let searchQuery = "";
 const FAVORITES_KEY = "zh_movies_favorites";
 
