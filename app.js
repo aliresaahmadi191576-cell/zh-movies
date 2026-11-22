@@ -245,6 +245,308 @@
     }
   }
 
+  // ========================================
+  // 🔥 تازه‌های ژ موویز
+  // ========================================
+
+  const latestSection = document.createElement("section");
+  latestSection.id = "zhLatest";
+
+  latestSection.style.cssText = `
+    margin: 22px 5%;
+    padding: 20px;
+    background: linear-gradient(135deg, #241034, #37164d);
+    border: 1px solid rgba(255, 211, 79, 0.35);
+    border-radius: 22px;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.25);
+    color: white;
+    direction: rtl;
+  `;
+
+  const latestHeading = document.createElement("div");
+
+  latestHeading.style.cssText = `
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  `;
+
+  const latestTitle = document.createElement("h2");
+  latestTitle.textContent = "🔥 تازه‌های ژ موویز";
+
+  latestTitle.style.cssText = `
+    margin: 0;
+    color: #ffd56a;
+    font-size: 21px;
+    font-weight: bold;
+  `;
+
+  const latestSubtitle = document.createElement("span");
+  latestSubtitle.textContent = "جدیدترین فیلم‌ها و سریال‌ها";
+
+  latestSubtitle.style.cssText = `
+    color: #d8c4e5;
+    font-size: 12px;
+  `;
+
+  latestHeading.append(latestTitle, latestSubtitle);
+
+  const latestGrid = document.createElement("div");
+  latestGrid.id = "zhLatestGrid";
+
+  latestGrid.style.cssText = `
+    display: grid;
+    grid-template-columns: repeat(
+      auto-fit,
+      minmax(min(100%, 145px), 1fr)
+    );
+    gap: 13px;
+  `;
+
+  latestSection.append(latestHeading, latestGrid);
+
+  const librarySection =
+    document.getElementById("library");
+
+  if (librarySection && librarySection.parentNode) {
+    librarySection.parentNode.insertBefore(
+      latestSection,
+      librarySection
+    );
+  } else {
+    const hero = document.querySelector(".hero");
+
+    if (hero) {
+      hero.insertAdjacentElement(
+        "afterend",
+        latestSection
+      );
+    } else {
+      latestSection.hidden = true;
+    }
+  }
+
+  function getCreatedTime(item) {
+    if (!item.createdAt) return 0;
+
+    if (typeof item.createdAt.toMillis === "function") {
+      return item.createdAt.toMillis();
+    }
+
+    if (typeof item.createdAt.seconds === "number") {
+      return item.createdAt.seconds * 1000;
+    }
+
+    return 0;
+  }
+
+  function renderLatest() {
+    latestGrid.replaceChildren();
+
+    if (!items.length) {
+      latestSection.hidden = true;
+      return;
+    }
+
+    const sorted = [...items].sort((a, b) => {
+      return getCreatedTime(b) - getCreatedTime(a);
+    });
+
+    const unique = new Map();
+
+    sorted.forEach(item => {
+      const name = item.kind === "series"
+        ? seriesName(item.title)
+        : item.title;
+
+      const key = item.kind + "|" + name;
+
+      if (!unique.has(key)) {
+        unique.set(key, {
+          ...item,
+          displayName: name
+        });
+      }
+    });
+
+    const latestItems = [...unique.values()].slice(0, 6);
+
+    if (!latestItems.length) {
+      latestSection.hidden = true;
+      return;
+    }
+
+    latestSection.hidden = false;
+
+    latestItems.forEach(item => {
+      const card = document.createElement("article");
+
+      card.style.cssText = `
+        background: #1d102b;
+        border: 1px solid #68417c;
+        border-radius: 15px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+      `;
+
+      const posterBox = document.createElement("div");
+
+      posterBox.style.cssText = `
+        width: 100%;
+        aspect-ratio: 3 / 4;
+        background: linear-gradient(
+          145deg,
+          #482066,
+          #170b24
+        );
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        color: #ffd56a;
+        font-size: 35px;
+      `;
+
+      if (item.poster) {
+        const img = document.createElement("img");
+        img.src = item.poster;
+        img.alt = item.displayName;
+        img.loading = "lazy";
+
+        img.style.cssText = `
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        `;
+
+        img.onerror = () => {
+          posterBox.replaceChildren();
+          posterBox.textContent = "🎬";
+        };
+
+        posterBox.append(img);
+      } else {
+        posterBox.textContent = "🎬";
+      }
+
+      const content = document.createElement("div");
+
+      content.style.cssText = `
+        padding: 11px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        flex: 1;
+      `;
+
+      const title = document.createElement("h3");
+      title.textContent = item.displayName;
+
+      title.style.cssText = `
+        color: white;
+        font-size: 14px;
+        line-height: 1.6;
+        margin: 0;
+        overflow-wrap: anywhere;
+      `;
+
+      const type = document.createElement("p");
+
+      type.textContent = item.kind === "series"
+        ? "📺 سریال"
+        : "🎬 فیلم";
+
+      type.style.cssText = `
+        color: #d6bddf;
+        font-size: 12px;
+        margin: 0;
+      `;
+
+      const category = document.createElement("p");
+
+      category.textContent =
+        CATEGORIES[item.category] || "ژ موویز";
+
+      category.style.cssText = `
+        color: #ffd56a;
+        font-size: 11px;
+        margin: 0;
+      `;
+
+      const button = document.createElement("button");
+      button.type = "button";
+      button.textContent = "▶ تماشا";
+
+      button.style.cssText = `
+        margin-top: auto;
+        padding: 9px 6px;
+        background: #ffd34f;
+        color: #241034;
+        border: none;
+        border-radius: 9px;
+        font-size: 12px;
+        font-weight: bold;
+        cursor: pointer;
+      `;
+
+      button.onclick = () => {
+        filter = "all";
+        categoryFilter = "all";
+        updateFilterButtons();
+        render();
+
+        const grid = $("grid");
+
+        if (!grid) return;
+
+        const cards = [...grid.querySelectorAll(".card")];
+
+        const matchingCard = cards.find(card => {
+          const heading = card.querySelector(".info h3");
+          return heading &&
+            heading.textContent === item.displayName;
+        });
+
+        if (matchingCard) {
+          matchingCard.scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+          });
+
+          matchingCard.style.outline =
+            "2px solid #ffd34f";
+
+          setTimeout(() => {
+            matchingCard.style.outline = "";
+          }, 2500);
+        } else {
+          grid.scrollIntoView({
+            behavior: "smooth"
+          });
+        }
+      };
+
+      content.append(
+        title,
+        type,
+        category,
+        button
+      );
+
+      card.append(posterBox, content);
+      latestGrid.append(card);
+    });
+  }
+
+  // ========================================
+  // 🎬 آرشیو و دسته‌بندی‌ها
+  // ========================================
+
   function render() {
     const grid = categoryFilter === "all"
       ? $("grid")
@@ -428,6 +730,10 @@
     });
   }
 
+  // ========================================
+  // ✏️ مدیریت آثار
+  // ========================================
+
   function renderAdminList() {
     const container = $("adminMovieList");
     if (!container) return;
@@ -573,6 +879,10 @@
     }
   };
 
+  // ========================================
+  // 🔥 اتصال Firebase
+  // ========================================
+
   if (!cfg || !cfg.apiKey || !cfg.projectId) {
     $("notice").textContent =
       "تنظیمات Firebase تکمیل نشده است.";
@@ -604,7 +914,8 @@
           year: x.year || "",
           poster: x.posterUrl || x.poster || "",
           url: x.videoUrl || x.url || "",
-          description: x.description || ""
+          description: x.description || "",
+          createdAt: x.createdAt || null
         };
       });
 
@@ -612,6 +923,7 @@
         items.length + " مورد در آرشیو";
 
       render();
+      renderLatest();
       renderAdminList();
     },
     () => {
