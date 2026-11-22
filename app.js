@@ -783,7 +783,88 @@ playerArea.style.display = "none";
       grid.append(card);
     });
   }
+function renderFavorites() {
+  const grid = document.getElementById("favoritesGrid");
+  const empty = document.getElementById("favoritesEmpty");
 
+  if (!grid || !empty) return;
+
+  grid.replaceChildren();
+
+  const savedItems = items.filter(item =>
+    isFavorite(item.id)
+  );
+
+  empty.style.display = savedItems.length ? "none" : "block";
+
+  savedItems.forEach(item => {
+    const card = document.createElement("article");
+    card.className = "card";
+
+    const thumb = document.createElement("div");
+    thumb.className = "thumb";
+
+    if (item.poster) {
+      const img = document.createElement("img");
+      img.src = item.poster;
+      img.alt = item.title;
+      img.loading = "lazy";
+
+      img.onerror = () => {
+        thumb.replaceChildren();
+        thumb.textContent = "✦";
+      };
+
+      thumb.append(img);
+    } else {
+      thumb.textContent = "✦";
+    }
+
+    const info = document.createElement("div");
+    info.className = "info";
+
+    const title = document.createElement("h3");
+    title.textContent = item.kind === "series"
+      ? seriesName(item.title)
+      : item.title;
+
+    const details = document.createElement("p");
+    details.textContent = item.kind === "series"
+      ? "📺 سریال"
+      : "🎬 فیلم";
+
+    const removeBtn = document.createElement("button");
+    removeBtn.type = "button";
+    removeBtn.textContent = "❤️ حذف از علاقه‌مندی‌ها";
+    removeBtn.className = "yellow";
+
+    removeBtn.onclick = () => {
+      toggleFavorite(item.id);
+    };
+
+    info.append(title, details, removeBtn);
+
+    if (item.url) {
+      const playBtn = document.createElement("button");
+      playBtn.type = "button";
+      playBtn.className = "yellow";
+      playBtn.style.marginTop = "10px";
+
+      playBtn.textContent = item.kind === "series"
+        ? "▶ قسمت " + episodeNumber(item.title)
+        : "▶ تماشا";
+
+      playBtn.onclick = () => {
+        startVideo(item.url);
+      };
+
+      info.append(playBtn);
+    }
+
+    card.append(thumb, info);
+    grid.append(card);
+  });
+}
   // ========================================
   // ✏️ مدیریت آثار
   // ========================================
