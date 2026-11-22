@@ -108,8 +108,8 @@ jobs:
                   applicationId 'com.zhmovies.app'
                   minSdk 23
                   targetSdk 35
-                  versionCode 5
-                  versionName '1.3.1'
+                 versionCode 6
+                 versionName '1.3.2'
               }
 
               buildTypes {
@@ -253,8 +253,8 @@ jobs:
                   setContentView(root);
 
                   webView.loadUrl(
-                      "https://zh-movies.pages.dev/"
-                  );
+            "https://aliresaahmadi191576-cell.github.io/zh-movies/"
+                   );
               }
 
               private void exitFullscreen() {
