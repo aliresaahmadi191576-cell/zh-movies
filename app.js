@@ -1177,11 +1177,15 @@ db.collection("ratings").onSnapshot(
     });
 
     movieRatings = {};
+movieRatingCounts = {};
 
-    Object.keys(totals).forEach(movieId => {
-      movieRatings[movieId] =
-        totals[movieId].sum / totals[movieId].count;
-    });
+Object.keys(totals).forEach(movieId => {
+  movieRatings[movieId] =
+    totals[movieId].sum / totals[movieId].count;
+
+  movieRatingCounts[movieId] =
+    totals[movieId].count;
+});
 
     render();
   },
