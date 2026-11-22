@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="fa" dir="rtl">
 <head>
@@ -13,7 +14,7 @@
 <body>
 <header>
 <a class="logo" href="#"><b>ZH</b> Zh Movies</a>
-<button id="adminOpen">مدیریت</button>
+<button id="adminOpen" hidden>مدیریت</button>
 </header>
 <main>
 <section class="hero">
@@ -39,16 +40,19 @@
 </section>
 </main>
 <footer>ساخته‌شده با ♥ برای Zh Movies</footer>
+
 <div id="modal" class="modal">
 <section class="panel">
 <button id="close" class="close">×</button>
 <small>پنل مدیریت</small>
 <h2>افزودن فیلم و سریال</h2>
+
 <form id="login">
 <input id="email" type="email" placeholder="ایمیل مدیر" required>
 <input id="password" type="password" placeholder="رمز عبور" required>
-<button class="purple">ورود</button>
+<button class="purple" type="submit">ورود</button>
 </form>
+
 <div id="uploadPanel" hidden>
 <p id="who"></p>
 <button id="logout">خروج</button>
@@ -71,6 +75,7 @@
 </div>
 </section>
 </div>
+
 <script src="firebase-config.js"></script>
 <script src="app.js"></script>
 </body>
