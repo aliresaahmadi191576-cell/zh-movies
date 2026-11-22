@@ -19,6 +19,21 @@
   let items = [];
   let filter = "all";
   let categoryFilter = "all";
+  let searchQuery = "";
+
+const searchInput = document.getElementById("zhSearchInput");
+
+if (searchInput) {
+  searchInput.addEventListener("input", () => {
+    searchQuery = searchInput.value
+      .trim()
+      .toLocaleLowerCase("fa")
+      .replace(/ي/g, "ی")
+      .replace(/ك/g, "ک");
+
+    render();
+  });
+}
   let currentUser = null;
   let editingId = null;
 
