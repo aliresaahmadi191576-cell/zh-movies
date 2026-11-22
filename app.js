@@ -1095,6 +1095,7 @@ function renderFavorites() {
 
       render();
       renderLatest();
+      renderFavorites();
       renderAdminList();
     },
     () => {
