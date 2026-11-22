@@ -21,7 +21,7 @@
   let categoryFilter = "all";
   // ⭐ Zh Movies Rating System
 let movieRatings = {};
-
+let movieRatingCounts = {};
 function getMovieRating(movieId) {
   return movieRatings[movieId] || 0;
 }
