@@ -1,0 +1,85 @@
+
+name: Sync Movies
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "*/15 * * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-movies
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Firestore library
+        run: pip install google-cloud-firestore
+
+      - name: Export public movie catalog
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from google.cloud import firestore
+          from google.oauth2 import service_account
+
+          raw = os.environ.get("FIREBASE_SERVICE_ACCOUNT")
+          if not raw:
+              raise RuntimeError("FIREBASE_SERVICE_ACCOUNT secret is missing")
+
+          credentials = service_account.Credentials.from_service_account_info(
+              json.loads(raw)
+          )
+
+          db = firestore.Client(
+              project="zh-movies-f7e04",
+              credentials=credentials
+          )
+
+          movies = []
+          for doc in db.collection("movies").stream():
+              data = doc.to_dict() or {}
+              created = data.get("createdAt")
+
+              movies.append({
+                  "id": doc.id,
+                  "title": data.get("title", ""),
+                  "kind": data.get("kind", data.get("type", "movie")),
+                  "category": data.get("category", ""),
+                  "year": data.get("year", ""),
+                  "description": data.get("description", ""),
+                  "posterUrl": data.get("posterUrl", data.get("poster", "")),
+                  "videoUrl": data.get("videoUrl", data.get("url", "")),
+                  "createdAt": created.isoformat() if hasattr(created, "isoformat") else None
+              })
+
+          movies.sort(key=lambda item: item["id"])
+
+          with open("movies.json", "w", encoding="utf-8") as file:
+              json.dump(movies, file, ensure_ascii=False, indent=2)
+          PY
+
+      - name: Publish updated catalog
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add movies.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Update public movie catalog"
+            git push
+          fi
