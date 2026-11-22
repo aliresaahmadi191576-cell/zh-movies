@@ -253,8 +253,8 @@ jobs:
                   setContentView(root);
 
                   webView.loadUrl(
-            "https://aliresaahmadi191576-cell.github.io/zh-movies/"
-                   );
+                      "https://aliresaahmadi191576-cell.github.io/zh-movies/"
+                  );
               }
 
               private void exitFullscreen() {
