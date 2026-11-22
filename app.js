@@ -398,7 +398,7 @@
 
       posterBox.style.cssText = `
         width: 100%;
-        aspect-ratio: 3 / 4;
+        aspect-ratio: 16 / 9
         background: linear-gradient(
           145deg,
           #482066,
