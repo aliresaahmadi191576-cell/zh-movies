@@ -768,10 +768,29 @@ for (let star = 1; star <= 5; star++) {
     "امتیاز " + star + " از ۵"
   );
 
-  starBtn.onclick = () => {
+  starBtn.onclick = async () => {
+  starBtn.disabled = true;
+
+  try {
+    const user = await ensureRatingUser();
+
+    await db.collection("ratings")
+      .doc(user.uid + "_" + movieId)
+      .set({
+        movieId: movieId,
+        userId: user.uid,
+        score: star
+      });
+
     movieRatings[movieId] = star;
     render();
-  };
+
+  } catch (error) {
+    console.error("Rating error:", error);
+    alert("امتیاز ثبت نشد. دوباره تلاش کن.");
+    starBtn.disabled = false;
+  }
+};
 
   ratingBox.append(starBtn);
 }
