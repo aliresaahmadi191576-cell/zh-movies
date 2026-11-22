@@ -3,7 +3,7 @@
 <html lang="fa" dir="rtl">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#10091b">
 <title>Zh Movies | ژ موویز</title>
 
@@ -14,11 +14,40 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 
 <style>
-/* THREE-TAB BOTTOM NAVIGATION */
-body {
-  padding-bottom: 85px;
+/* APP-LIKE FIXED LAYOUT */
+html {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  overscroll-behavior-x: none;
 }
 
+body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  overscroll-behavior-x: none;
+  touch-action: pan-y;
+  padding-bottom: calc(85px + env(safe-area-inset-bottom));
+}
+
+img, video {
+  max-width: 100%;
+}
+
+main, section, header, footer {
+  max-width: 100%;
+}
+
+#grid {
+  min-width: 0;
+}
+
+.grid > * {
+  min-width: 0;
+}
+
+/* BOTTOM NAVIGATION */
 .bottom-nav {
   position: fixed;
   bottom: 0;
@@ -43,6 +72,7 @@ body {
   padding: 8px 4px;
   font-size: 12px;
   cursor: pointer;
+  touch-action: manipulation;
 }
 
 .nav-item.active {
@@ -56,6 +86,7 @@ body {
   margin-bottom: 3px;
 }
 
+/* SECONDARY PAGES */
 #categoriesPage,
 #aboutPage {
   display: none;
@@ -83,12 +114,14 @@ body {
   padding: 22px 8px;
   font-size: 14px;
   cursor: pointer;
+  touch-action: manipulation;
 }
 
 .category-btn:active {
   background: #583178;
 }
 
+/* ABOUT US */
 .about-card {
   max-width: 550px;
   margin: 20px auto;
@@ -119,7 +152,7 @@ body {
   color: #c4b0d3;
 }
 
-/* Keep admin modal above navigation */
+/* KEEP ADMIN ABOVE NAV */
 .modal {
   z-index: 100;
 }
@@ -207,9 +240,7 @@ body {
 
     <h2>💜 درباره ژ موویز</h2>
 
-    <p>
-      به ژ موویز خوش آمدید!
-    </p>
+    <p>به ژ موویز خوش آمدید!</p>
 
     <p>
       ژ موویز دنیایی برای کشف و تماشای
@@ -222,9 +253,7 @@ body {
       به فیلم و سریال است.
     </p>
 
-    <p>
-      🎬 با ژ موویز، هر روز یک قصه تازه!
-    </p>
+    <p>🎬 با ژ موویز، هر روز یک قصه تازه!</p>
 
     <small>Zh Movies 💜💛</small>
   </div>
@@ -236,7 +265,7 @@ body {
   ساخته‌شده با ♥ برای Zh Movies
 </footer>
 
-<!-- BOTTOM NAVIGATION -->
+<!-- FIXED BOTTOM NAVIGATION -->
 <nav class="bottom-nav" aria-label="منوی اصلی">
 
   <button
@@ -275,7 +304,6 @@ body {
     <small>پنل مدیریت</small>
     <h2>افزودن فیلم و سریال</h2>
 
-    <!-- LOGIN -->
     <form id="login">
       <input
         id="email"
@@ -294,7 +322,6 @@ body {
       </button>
     </form>
 
-    <!-- UPLOAD PANEL -->
     <div id="uploadPanel" hidden>
 
       <p id="who"></p>
@@ -412,7 +439,6 @@ body {
 
   document.querySelectorAll(".category-btn")
     .forEach(function (button) {
-
       button.addEventListener("click", function () {
         const category = button.dataset.category;
 
@@ -431,7 +457,6 @@ body {
             behavior: "smooth"
           });
       });
-
     });
 })();
 </script>
