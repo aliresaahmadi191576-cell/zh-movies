@@ -3,7 +3,6 @@
   const $ = id => document.getElementById(id);
   const cfg = window.FIREBASE_CONFIG;
 
-  // شناسه مدیر ژ موویز
   const ADMIN_UID = "PLbmf0H2PYcPhX52spP8VpLRES53";
 
   const CATEGORIES = {
@@ -22,46 +21,119 @@
   let filter = "all";
   let categoryFilter = "all";
   let currentUser = null;
+  let editingId = null;
 
   const modal = $("modal");
   const adminButton = $("adminOpen");
 
   const adminMode =
-    new URLSearchParams(window.location.search)
-      .get("admin") === "1";
+    new URLSearchParams(location.search).get("admin") === "1";
 
   function isAdmin(user) {
     return !!user && user.uid === ADMIN_UID;
   }
 
+  // Create the edit panel inside the existing admin panel.
+  const uploadPanel = $("uploadPanel");
+
+  const editSection = document.createElement("section");
+  editSection.id = "editSection";
+  editSection.style.marginTop = "25px";
+  editSection.style.borderTop = "1px solid #79588e";
+  editSection.style.paddingTop = "20px";
+
+  editSection.innerHTML = `
+    <h3 style="color:#ffd56a">✏️ مدیریت و ویرایش آثار</h3>
+    <p>برای ویرایش، روی یکی از آثار زیر بزن.</p>
+    <div id="adminMovieList"></div>
+  `;
+
+  uploadPanel.append(editSection);
+
+  const editForm = document.createElement("form");
+  editForm.id = "editMovieForm";
+  editForm.hidden = true;
+
+  editForm.innerHTML = `
+    <h3 style="color:#ffd56a">✏️ ویرایش اثر</h3>
+
+    <input id="editTitle"
+      placeholder="نام فیلم یا سریال"
+      maxlength="90" required>
+
+    <select id="editKind">
+      <option value="movie">فیلم</option>
+      <option value="series">سریال</option>
+    </select>
+
+    <select id="editCategory" required>
+      <option value="">انتخاب دسته‌بندی</option>
+      <option value="talkshow">🎤 تاک شو</option>
+      <option value="comedy">😂 کمدی</option>
+      <option value="romance">❤️ عاشقانه</option>
+      <option value="action">💥 اکشن</option>
+      <option value="musical">🎵 موزیکال</option>
+      <option value="foreign">🌍 خارجی</option>
+      <option value="cartoon">🐣 کارتون</option>
+      <option value="mystery">🕵️ معمایی</option>
+    </select>
+
+    <input id="editYear"
+      type="number" placeholder="سال">
+
+    <textarea id="editDescription"
+      placeholder="توضیحات کوتاه"></textarea>
+
+    <input id="editPoster"
+      type="url" placeholder="لینک پوستر">
+
+    <input id="editVideo"
+      type="url" placeholder="لینک ویدیو" required>
+
+    <button class="yellow" type="submit">
+      💾 ذخیره تغییرات
+    </button>
+
+    <button id="cancelEdit" type="button">
+      انصراف
+    </button>
+
+    <p id="editStatus"></p>
+  `;
+
+  editSection.append(editForm);
+
   function updateAdminUI() {
     const allowed = isAdmin(currentUser);
 
     adminButton.hidden = !adminMode;
-
     $("login").hidden = !adminMode || allowed;
-    $("uploadPanel").hidden = !adminMode || !allowed;
+    uploadPanel.hidden = !adminMode || !allowed;
 
-    $("who").textContent =
-      allowed ? (currentUser.email || "مدیر") : "";
+    $("who").textContent = allowed
+      ? (currentUser.email || "مدیر")
+      : "";
+
+    if (!allowed) {
+      editingId = null;
+      editForm.hidden = true;
+    }
 
     if (!adminMode) {
       modal.classList.remove("open");
     }
+
+    renderAdminList();
   }
 
   adminButton.onclick = () => {
     if (adminMode) modal.classList.add("open");
   };
 
-  $("close").onclick = () => {
-    modal.classList.remove("open");
-  };
+  $("close").onclick = () => modal.classList.remove("open");
 
   modal.onclick = e => {
-    if (e.target === modal) {
-      modal.classList.remove("open");
-    }
+    if (e.target === modal) modal.classList.remove("open");
   };
 
   function updateFilterButtons() {
@@ -73,7 +145,6 @@
     });
   }
 
-  // فیلتر فیلم و سریال در صفحه هوم
   document.querySelectorAll(".filter").forEach(button => {
     button.onclick = () => {
       filter = button.dataset.filter;
@@ -83,17 +154,13 @@
     };
   });
 
-  // دریافت دسته انتخاب‌شده از index.html
   document.addEventListener("zh-category-filter", event => {
     const selected = event.detail?.category || "all";
 
-    if (selected !== "all" && !CATEGORIES[selected]) {
-      return;
-    }
+    if (selected !== "all" && !CATEGORIES[selected]) return;
 
     categoryFilter = selected;
     filter = "all";
-
     updateFilterButtons();
     render();
   });
@@ -102,26 +169,15 @@
   const arDigits = "٠١٢٣٤٥٦٧٨٩";
 
   const words = {
-    اول: 1,
-    دوم: 2,
-    سوم: 3,
-    چهارم: 4,
-    پنجم: 5,
-    ششم: 6,
-    هفتم: 7,
-    هشتم: 8,
-    نهم: 9,
-    دهم: 10
+    اول: 1, دوم: 2, سوم: 3, چهارم: 4,
+    پنجم: 5, ششم: 6, هفتم: 7, هشتم: 8,
+    نهم: 9, دهم: 10
   };
 
   function episodeNumber(title) {
     const t = title.replace(/[۰-۹٠-٩]/g, c => {
       let n = faDigits.indexOf(c);
-
-      if (n < 0) {
-        n = arDigits.indexOf(c);
-      }
-
+      if (n < 0) n = arDigits.indexOf(c);
       return String(n);
     });
 
@@ -151,16 +207,13 @@
 
   function makeVideo(url) {
     const video = document.createElement("video");
-
     video.src = url;
     video.controls = true;
     video.playsInline = true;
     video.preload = "metadata";
-
     video.style.width = "100%";
     video.style.borderRadius = "12px";
     video.style.marginTop = "10px";
-
     return video;
   }
 
@@ -168,7 +221,6 @@
     const grid = $("grid");
     grid.replaceChildren();
 
-    // ابتدا فیلتر فیلم/سریال و سپس دسته‌بندی
     const list = items.filter(x => {
       const kindMatches =
         filter === "all" || x.kind === filter;
@@ -201,13 +253,11 @@
     });
 
     if (!groups.size) {
-      grid.textContent =
-        categoryFilter !== "all"
-          ? "هنوز اثری در دسته «" +
-            CATEGORIES[categoryFilter] +
-            "» ثبت نشده است."
-          : "هنوز محتوایی ثبت نشده است.";
-
+      grid.textContent = categoryFilter !== "all"
+        ? "هنوز اثری در دسته «" +
+          CATEGORIES[categoryFilter] +
+          "» ثبت نشده است."
+        : "هنوز محتوایی ثبت نشده است.";
       return;
     }
 
@@ -227,7 +277,6 @@
 
       if (poster) {
         const img = document.createElement("img");
-
         img.src = poster;
         img.alt = group.name;
         img.loading = "lazy";
@@ -249,32 +298,26 @@
       title.textContent = group.name;
 
       const details = document.createElement("p");
-
       details.textContent = group.kind === "series"
         ? "📺 سریال • " + entries.length + " قسمت"
         : "🎬 فیلم";
 
       info.append(title, details);
 
-      // نمایش دسته‌بندی اثر
       const categories = [
         ...new Set(
-          entries
-            .map(x => x.category)
+          entries.map(x => x.category)
             .filter(x => CATEGORIES[x])
         )
       ];
 
       if (categories.length) {
         const categoryText = document.createElement("p");
-
         categoryText.textContent = categories
           .map(x => CATEGORIES[x])
           .join(" • ");
-
         categoryText.style.color = "#ffd56a";
         categoryText.style.fontSize = "12px";
-
         info.append(categoryText);
       }
 
@@ -291,14 +334,11 @@
 
       if (group.kind === "series") {
         const heading = document.createElement("p");
-
         heading.textContent =
           "قسمت موردنظر را انتخاب کنید:";
-
         info.append(heading);
 
         const buttons = document.createElement("div");
-
         buttons.style.display = "flex";
         buttons.style.flexWrap = "wrap";
         buttons.style.gap = "8px";
@@ -309,15 +349,12 @@
           const btn = document.createElement("button");
           const num = episodeNumber(x.title);
 
-          btn.textContent =
-            "▶ قسمت " + (num || i + 1);
-
+          btn.textContent = "▶ قسمت " + (num || i + 1);
           btn.className = "yellow";
           btn.style.padding = "9px 12px";
 
           btn.onclick = () => {
             playerArea.replaceChildren(makeVideo(x.url));
-
             playerArea.querySelector("video")
               .scrollIntoView({
                 behavior: "smooth",
@@ -331,16 +368,156 @@
         info.append(buttons, playerArea);
       } else {
         const x = entries[0];
-
-        if (x.url) {
-          info.append(makeVideo(x.url));
-        }
+        if (x.url) info.append(makeVideo(x.url));
       }
 
       card.append(thumb, info);
       grid.append(card);
     });
   }
+
+  // Admin editing list: each Firestore document is editable.
+  function renderAdminList() {
+    const container = $("adminMovieList");
+    if (!container) return;
+
+    container.replaceChildren();
+
+    if (!adminMode || !isAdmin(currentUser)) return;
+
+    if (!items.length) {
+      container.textContent = "هنوز اثری ثبت نشده است.";
+      return;
+    }
+
+    items.forEach(item => {
+      const row = document.createElement("div");
+
+      row.style.display = "flex";
+      row.style.justifyContent = "space-between";
+      row.style.alignItems = "center";
+      row.style.gap = "10px";
+      row.style.padding = "12px";
+      row.style.marginBottom = "10px";
+      row.style.background = "#302040";
+      row.style.borderRadius = "12px";
+
+      const name = document.createElement("span");
+      name.textContent = item.title;
+      name.style.flex = "1";
+      name.style.minWidth = "0";
+      name.style.overflowWrap = "anywhere";
+
+      const button = document.createElement("button");
+      button.type = "button";
+      button.textContent = "✏️ ویرایش";
+      button.className = "yellow";
+      button.style.padding = "8px 10px";
+
+      button.onclick = () => openEditor(item.id);
+
+      row.append(name, button);
+      container.append(row);
+    });
+  }
+
+  function openEditor(id) {
+    if (!adminMode || !isAdmin(currentUser)) return;
+
+    const item = items.find(x => x.id === id);
+    if (!item) return;
+
+    editingId = id;
+
+    $("editTitle").value = item.title;
+    $("editKind").value = item.kind;
+    $("editCategory").value = item.category || "";
+    $("editYear").value = item.year;
+    $("editDescription").value = item.description;
+    $("editPoster").value = item.poster;
+    $("editVideo").value = item.url;
+
+    $("editStatus").textContent = "";
+    editForm.hidden = false;
+
+    editForm.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+  }
+
+  $("cancelEdit").onclick = () => {
+    editingId = null;
+    editForm.hidden = true;
+    $("editStatus").textContent = "";
+  };
+
+  editForm.onsubmit = async e => {
+    e.preventDefault();
+
+    if (!adminMode ||
+        !isAdmin(auth.currentUser) ||
+        !editingId) {
+      $("editStatus").textContent =
+        "اجازه ویرایش ندارید.";
+      return;
+    }
+
+    const title = $("editTitle").value.trim();
+    const kind = $("editKind").value;
+    const category = $("editCategory").value;
+    const year = $("editYear").value.trim();
+    const description = $("editDescription").value.trim();
+    const posterUrl = $("editPoster").value.trim();
+    const videoUrl = $("editVideo").value.trim();
+
+    if (!CATEGORIES[category]) {
+      $("editStatus").textContent =
+        "لطفاً دسته‌بندی را انتخاب کنید.";
+      return;
+    }
+
+    if (
+      !title ||
+      !/^https:\/\//i.test(videoUrl) ||
+      (posterUrl && !/^https:\/\//i.test(posterUrl))
+    ) {
+      $("editStatus").textContent =
+        "نام اثر و لینک‌های معتبر https:// لازم است.";
+      return;
+    }
+
+    const button = editForm.querySelector(
+      'button[type="submit"]'
+    );
+
+    button.disabled = true;
+    $("editStatus").textContent = "در حال ذخیره تغییرات…";
+
+    try {
+      await db.collection("movies").doc(editingId).update({
+        title,
+        type: kind,
+        kind,
+        category,
+        year,
+        description,
+        posterUrl,
+        videoUrl
+      });
+
+      $("editStatus").textContent =
+        "✅ تغییرات با موفقیت ذخیره شد.";
+
+      editingId = null;
+      editForm.hidden = true;
+    } catch (error) {
+      $("editStatus").textContent =
+        "ویرایش انجام نشد: " + error.message;
+    } finally {
+      button.disabled = false;
+    }
+  };
 
   if (!cfg || !cfg.apiKey || !cfg.projectId) {
     $("notice").textContent =
@@ -350,7 +527,6 @@
 
   try {
     firebase.initializeApp(cfg);
-
     auth = firebase.auth();
     db = firebase.firestore();
   } catch (e) {
@@ -365,27 +541,16 @@
         const x = doc.data();
 
         return {
+          id: doc.id,
           title: x.title || "بدون عنوان",
-
-          kind:
-            x.kind === "series" || x.type === "series"
-              ? "series"
-              : "movie",
-
+          kind: x.kind === "series" || x.type === "series"
+            ? "series" : "movie",
           category: CATEGORIES[x.category]
-            ? x.category
-            : "",
-
+            ? x.category : "",
           year: x.year || "",
-
-          poster:
-            x.posterUrl || x.poster || "",
-
-          url:
-            x.videoUrl || x.url || "",
-
-          description:
-            x.description || ""
+          poster: x.posterUrl || x.poster || "",
+          url: x.videoUrl || x.url || "",
+          description: x.description || ""
         };
       });
 
@@ -393,8 +558,8 @@
         items.length + " مورد در آرشیو";
 
       render();
+      renderAdminList();
     },
-
     () => {
       $("notice").textContent =
         "آرشیو قابل خواندن نیست؛ قوانین Firestore را بررسی کنید.";
@@ -408,7 +573,6 @@
 
   $("login").onsubmit = async e => {
     e.preventDefault();
-
     if (!adminMode) return;
 
     try {
@@ -420,7 +584,6 @@
 
       if (!isAdmin(result.user)) {
         await auth.signOut();
-
         alert("این حساب اجازه مدیریت ندارد.");
         return;
       }
@@ -450,7 +613,6 @@
     const title = $("title").value.trim();
     const videoUrl = $("video").value.trim();
     const posterUrl = $("poster").value.trim();
-
     const category = $("category")?.value || "";
 
     if (!CATEGORIES[category]) {
@@ -479,31 +641,19 @@
     try {
       await db.collection("movies").add({
         title,
-
         type: $("kind").value,
         kind: $("kind").value,
-
         category,
-
         year: $("year").value.trim(),
-
-        description:
-          $("description").value.trim(),
-
+        description: $("description").value.trim(),
         posterUrl,
         videoUrl,
-
         createdAt:
           firebase.firestore.FieldValue.serverTimestamp(),
-
         createdBy: user.uid
       });
 
-      status.textContent =
-        "با موفقیت در دسته «" +
-        CATEGORIES[category] +
-        "» منتشر شد.";
-
+      status.textContent = "با موفقیت منتشر شد.";
       $("upload").reset();
     } catch (error) {
       status.textContent =
