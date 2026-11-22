@@ -14,7 +14,6 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 
 <style>
-/* APP-LIKE FIXED LAYOUT */
 html {
   width: 100%;
   max-width: 100%;
@@ -31,23 +30,10 @@ body {
   padding-bottom: calc(85px + env(safe-area-inset-bottom));
 }
 
-img, video {
-  max-width: 100%;
-}
+img, video { max-width: 100%; }
+main, section, header, footer { max-width: 100%; }
+#grid, .grid > * { min-width: 0; }
 
-main, section, header, footer {
-  max-width: 100%;
-}
-
-#grid {
-  min-width: 0;
-}
-
-.grid > * {
-  min-width: 0;
-}
-
-/* BOTTOM NAVIGATION */
 .bottom-nav {
   position: fixed;
   bottom: 0;
@@ -86,7 +72,6 @@ main, section, header, footer {
   margin-bottom: 3px;
 }
 
-/* SECONDARY PAGES */
 #categoriesPage,
 #aboutPage {
   display: none;
@@ -121,7 +106,6 @@ main, section, header, footer {
   background: #583178;
 }
 
-/* ABOUT US */
 .about-card {
   max-width: 550px;
   margin: 20px auto;
@@ -139,29 +123,21 @@ main, section, header, footer {
   font-weight: 800;
 }
 
-.about-card h2 {
-  color: #ffd56a;
-}
+.about-card h2 { color: #ffd56a; }
 
 .about-card p {
   color: #e4d5ee;
   line-height: 2.2;
 }
 
-.about-card small {
-  color: #c4b0d3;
-}
+.about-card small { color: #c4b0d3; }
 
-/* KEEP ADMIN ABOVE NAV */
-.modal {
-  z-index: 100;
-}
+.modal { z-index: 100; }
 </style>
 </head>
 
 <body>
 
-<!-- HEADER -->
 <header>
   <a class="logo" href="#" id="logoHome">
     <b>ZH</b> Zh Movies
@@ -169,7 +145,6 @@ main, section, header, footer {
   <button id="adminOpen" hidden>مدیریت</button>
 </header>
 
-<!-- HOME -->
 <main id="homePage">
 
   <section class="hero">
@@ -194,15 +169,9 @@ main, section, header, footer {
       <h2>کتابخانه <span>Zh Movies</span></h2>
 
       <div>
-        <button class="filter active" data-filter="all">
-          همه
-        </button>
-        <button class="filter" data-filter="movie">
-          فیلم
-        </button>
-        <button class="filter" data-filter="series">
-          سریال
-        </button>
+        <button class="filter active" data-filter="all">همه</button>
+        <button class="filter" data-filter="movie">فیلم</button>
+        <button class="filter" data-filter="series">سریال</button>
       </div>
     </div>
 
@@ -212,32 +181,26 @@ main, section, header, footer {
 
 </main>
 
-<!-- CATEGORIES -->
+<!-- 8 CATEGORIES -->
 <section id="categoriesPage">
   <h2 class="page-title">🎞️ دسته‌بندی‌ها</h2>
   <p>دوست داری چی تماشا کنی؟ 💜</p>
 
   <div class="category-list">
-    <button class="category-btn" data-category="all">
-      🎬 همه آثار
-    </button>
-
-    <button class="category-btn" data-category="movie">
-      🍿 فیلم‌ها
-    </button>
-
-    <button class="category-btn" data-category="series">
-      📺 سریال‌ها
-    </button>
+    <button class="category-btn" type="button" data-category="talkshow">🎤 تاک شو</button>
+    <button class="category-btn" type="button" data-category="comedy">😂 کمدی</button>
+    <button class="category-btn" type="button" data-category="romance">❤️ عاشقانه</button>
+    <button class="category-btn" type="button" data-category="action">💥 اکشن</button>
+    <button class="category-btn" type="button" data-category="musical">🎵 موزیکال</button>
+    <button class="category-btn" type="button" data-category="foreign">🌍 خارجی</button>
+    <button class="category-btn" type="button" data-category="cartoon">🐣 کارتون</button>
+    <button class="category-btn" type="button" data-category="mystery">🕵️ معمایی</button>
   </div>
 </section>
 
-<!-- ABOUT US -->
 <section id="aboutPage">
-
   <div class="about-card">
     <div class="about-logo">♛ ZH</div>
-
     <h2>💜 درباره ژ موویز</h2>
 
     <p>به ژ موویز خوش آمدید!</p>
@@ -254,45 +217,29 @@ main, section, header, footer {
     </p>
 
     <p>🎬 با ژ موویز، هر روز یک قصه تازه!</p>
-
     <small>Zh Movies 💜💛</small>
   </div>
-
 </section>
 
-<!-- FOOTER -->
 <footer>
   ساخته‌شده با ♥ برای Zh Movies
 </footer>
 
-<!-- FIXED BOTTOM NAVIGATION -->
 <nav class="bottom-nav" aria-label="منوی اصلی">
-
-  <button
-    class="nav-item active"
-    id="homeTab"
-    type="button"
-    aria-current="page">
+  <button class="nav-item active" id="homeTab" type="button" aria-current="page">
     <span>🏠</span>
     هوم
   </button>
 
-  <button
-    class="nav-item"
-    id="categoriesTab"
-    type="button">
+  <button class="nav-item" id="categoriesTab" type="button">
     <span>🎞️</span>
     دسته‌بندی
   </button>
 
-  <button
-    class="nav-item"
-    id="aboutTab"
-    type="button">
+  <button class="nav-item" id="aboutTab" type="button">
     <span>💜</span>
     درباره ما
   </button>
-
 </nav>
 
 <!-- ADMIN MODAL -->
@@ -305,32 +252,18 @@ main, section, header, footer {
     <h2>افزودن فیلم و سریال</h2>
 
     <form id="login">
-      <input
-        id="email"
-        type="email"
-        placeholder="ایمیل مدیر"
-        required>
-
-      <input
-        id="password"
-        type="password"
-        placeholder="رمز عبور"
-        required>
-
-      <button class="purple" type="submit">
-        ورود
-      </button>
+      <input id="email" type="email" placeholder="ایمیل مدیر" required>
+      <input id="password" type="password" placeholder="رمز عبور" required>
+      <button class="purple" type="submit">ورود</button>
     </form>
 
     <div id="uploadPanel" hidden>
-
       <p id="who"></p>
       <button id="logout">خروج</button>
 
       <hr>
 
       <form id="upload">
-
         <input
           id="title"
           placeholder="نام فیلم یا سریال"
@@ -343,15 +276,23 @@ main, section, header, footer {
             <option value="series">سریال</option>
           </select>
 
-          <input
-            id="year"
-            type="number"
-            placeholder="سال">
+          <input id="year" type="number" placeholder="سال">
         </div>
 
-        <textarea
-          id="description"
-          placeholder="توضیحات کوتاه"></textarea>
+        <!-- GENRE SELECTOR -->
+        <select id="category" required>
+          <option value="">انتخاب دسته‌بندی</option>
+          <option value="talkshow">🎤 تاک شو</option>
+          <option value="comedy">😂 کمدی</option>
+          <option value="romance">❤️ عاشقانه</option>
+          <option value="action">💥 اکشن</option>
+          <option value="musical">🎵 موزیکال</option>
+          <option value="foreign">🌍 خارجی</option>
+          <option value="cartoon">🐣 کارتون</option>
+          <option value="mystery">🕵️ معمایی</option>
+        </select>
+
+        <textarea id="description" placeholder="توضیحات کوتاه"></textarea>
 
         <input
           id="poster"
@@ -370,16 +311,13 @@ main, section, header, footer {
 
         <p id="status"></p>
       </form>
-
     </div>
   </section>
 </div>
 
-<!-- FIREBASE & MOVIE LOGIC -->
 <script src="firebase-config.js"></script>
 <script src="app.js"></script>
 
-<!-- PAGE NAVIGATION -->
 <script>
 (function () {
   const pages = {
@@ -405,14 +343,9 @@ main, section, header, footer {
       );
 
       if (name === pageName) {
-        tabs[name].setAttribute(
-          "aria-current",
-          "page"
-        );
+        tabs[name].setAttribute("aria-current", "page");
       } else {
-        tabs[name].removeAttribute(
-          "aria-current"
-        );
+        tabs[name].removeAttribute("aria-current");
       }
     });
 
@@ -444,18 +377,14 @@ main, section, header, footer {
 
         showPage("home");
 
-        const filter = document.querySelector(
-          '.filter[data-filter="' + category + '"]'
-        );
+        // app.js will handle the actual category filtering.
+        document.dispatchEvent(new CustomEvent("zh-category-filter", {
+          detail: { category: category }
+        }));
 
-        if (filter) {
-          filter.click();
-        }
-
-        document.getElementById("library")
-          .scrollIntoView({
-            behavior: "smooth"
-          });
+        document.getElementById("library").scrollIntoView({
+          behavior: "smooth"
+        });
       });
     });
 })();
