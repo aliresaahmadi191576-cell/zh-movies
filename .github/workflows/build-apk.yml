@@ -30,7 +30,24 @@ jobs:
         run: |
           mkdir -p android-app/app/src/main/java/com/zhmovies/app
           mkdir -p android-app/app/src/main/assets
+          mkdir -p android-app/app/src/main/res/drawable
 
+          cat > android-app/app/src/main/res/drawable/ic_launcher.xml <<'EOF'
+          <vector xmlns:android="http://schemas.android.com/apk/res/android"
+              android:width="512dp"
+              android:height="512dp"
+              android:viewportWidth="512"
+              android:viewportHeight="512">
+              <path android:fillColor="#16051F" android:pathData="M0,0h512v512h-512z"/>
+              <path android:fillColor="#31004D" android:strokeColor="#C43BFF" android:strokeWidth="8" android:pathData="M58,4H454Q508,4 508,58V454Q508,508 454,508H58Q4,508 4,454V58Q4,4 58,4Z"/>
+              <path android:fillColor="#F8C64B" android:pathData="M178,86L203,45L229,75L256,22L282,75L309,45L334,86L316,108L196,108Z"/>
+              <path android:fillColor="#21102E" android:strokeColor="#F8C64B" android:strokeWidth="10" android:pathData="M91,156L421,112L439,178L108,224Z"/>
+              <path android:fillColor="#21102E" android:strokeColor="#F8C64B" android:strokeWidth="10" android:pathData="M105,215H425V389H105Z"/>
+              <path android:fillColor="#A020F0" android:pathData="M224,244L224,340L310,292Z"/>
+              <path android:fillColor="#F6BD35" android:pathData="M79,410H433V435H79Z"/>
+              <path android:fillColor="#A020F0" android:pathData="M239,450L273,475L239,500Z"/>
+          </vector>
+          EOF
           cat > android-app/settings.gradle <<'EOF'
           pluginManagement {
               repositories {
