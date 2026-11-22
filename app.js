@@ -703,7 +703,26 @@ return kindMatches && categoryMatches && searchMatches;
         : "🎬 فیلم";
 
       info.append(title, details);
+const favoriteBtn = document.createElement("button");
 
+favoriteBtn.type = "button";
+favoriteBtn.textContent = isFavorite(entries[0].id)
+  ? "❤️ حذف از علاقه‌مندی‌ها"
+  : "🤍 افزودن به علاقه‌مندی‌ها";
+
+favoriteBtn.style.background = "#39224f";
+favoriteBtn.style.color = "#ffd56a";
+favoriteBtn.style.border = "1px solid #b18a4d";
+favoriteBtn.style.borderRadius = "12px";
+favoriteBtn.style.padding = "10px";
+favoriteBtn.style.marginBottom = "10px";
+favoriteBtn.style.cursor = "pointer";
+
+favoriteBtn.onclick = () => {
+  toggleFavorite(entries[0].id);
+};
+
+info.append(favoriteBtn);
       const categories = [
         ...new Set(
           entries.map(x => x.category)
