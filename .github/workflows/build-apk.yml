@@ -294,6 +294,13 @@ jobs:
           EOF
 
       - name: Build signed Release APK
+      
+      - name: Install new Zh Movies app icon
+        run: |
+          rm -f android-app/app/src/main/res/drawable/ic_launcher.xml
+          mkdir -p android-app/app/src/main/res/drawable-nodpi
+          cp app-icon.png android-app/app/src/main/res/drawable-nodpi/ic_launcher.png
+
         env:
           ZH_KEYSTORE_FILE: ${{ runner.temp }}/zh-movies-release.jks
           ZH_MOVIES_KEYSTORE_PASSWORD: ${{ secrets.ZH_MOVIES_KEYSTORE_PASSWORD }}
