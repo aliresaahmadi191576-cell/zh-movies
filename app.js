@@ -72,6 +72,14 @@ if (searchInput) {
     render();
   });
 }
+ async function ensureRatingUser() {
+  if (auth.currentUser) {
+    return auth.currentUser;
+  }
+
+  const result = await auth.signInAnonymously();
+  return result.user;
+}
   let currentUser = null;
   let editingId = null;
 
