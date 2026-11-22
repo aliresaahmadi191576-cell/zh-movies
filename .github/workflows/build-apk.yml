@@ -81,7 +81,14 @@ jobs:
           android {
               namespace 'com.zhmovies.app'
               compileSdk 35
-
+          signingConfigs {
+          release {
+          storeFile file(System.getenv('ZH_KEYSTORE_FILE'))
+          storePassword System.getenv('ZH_MOVIES_KEYSTORE_PASSWORD')
+          keyAlias 'zhmovies'
+          keyPassword System.getenv('ZH_MOVIES_KEY_PASSWORD')
+    }
+}
               defaultConfig {
                   applicationId 'com.zhmovies.app'
                   minSdk 23
