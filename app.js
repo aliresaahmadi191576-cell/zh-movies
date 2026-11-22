@@ -1,7 +1,7 @@
+
 (() => {
   const $ = id => document.getElementById(id);
   const cfg = window.FIREBASE_CONFIG;
-
   const ADMIN_UID = "PLbmf0H2PYcPhX52spP8VpLRES53";
 
   const CATEGORIES = {
@@ -24,7 +24,6 @@
 
   const modal = $("modal");
   const adminButton = $("adminOpen");
-
   const adminMode =
     new URLSearchParams(location.search).get("admin") === "1";
 
@@ -32,9 +31,7 @@
     return !!user && user.uid === ADMIN_UID;
   }
 
-  // Create the edit panel inside the existing admin panel.
   const uploadPanel = $("uploadPanel");
-
   const editSection = document.createElement("section");
   editSection.id = "editSection";
   editSection.style.marginTop = "25px";
@@ -77,8 +74,7 @@
       <option value="mystery">🕵️ معمایی</option>
     </select>
 
-    <input id="editYear"
-      type="number" placeholder="سال">
+    <input id="editYear" type="number" placeholder="سال">
 
     <textarea id="editDescription"
       placeholder="توضیحات کوتاه"></textarea>
@@ -214,6 +210,39 @@
     video.style.borderRadius = "12px";
     video.style.marginTop = "10px";
     return video;
+  }
+
+  function playFullscreen(video) {
+    if (!video) return;
+
+    try {
+      const playing = video.play();
+
+      if (playing && typeof playing.catch === "function") {
+        playing.catch(() => {});
+      }
+    } catch (error) {
+      // Video controls remain available.
+    }
+
+    try {
+      if (typeof video.requestFullscreen === "function") {
+        const fullscreen = video.requestFullscreen();
+
+        if (
+          fullscreen &&
+          typeof fullscreen.catch === "function"
+        ) {
+          fullscreen.catch(() => {});
+        }
+      } else if (
+        typeof video.webkitEnterFullscreen === "function"
+      ) {
+        video.webkitEnterFullscreen();
+      }
+    } catch (error) {
+      // Fall back to inline playback.
+    }
   }
 
   function render() {
@@ -375,13 +404,11 @@
           btn.style.padding = "9px 12px";
 
           btn.onclick = () => {
-            playerArea.replaceChildren(makeVideo(x.url));
+            const video = makeVideo(x.url);
 
-            playerArea.querySelector("video")
-              .scrollIntoView({
-                behavior: "smooth",
-                block: "nearest"
-              });
+            playerArea.replaceChildren(video);
+
+            playFullscreen(video);
           };
 
           buttons.append(btn);
@@ -401,7 +428,6 @@
     });
   }
 
-  // Admin editing list: each Firestore document is editable.
   function renderAdminList() {
     const container = $("adminMovieList");
     if (!container) return;
@@ -480,9 +506,11 @@
   editForm.onsubmit = async e => {
     e.preventDefault();
 
-    if (!adminMode ||
-        !isAdmin(auth.currentUser) ||
-        !editingId) {
+    if (
+      !adminMode ||
+      !isAdmin(auth.currentUser) ||
+      !editingId
+    ) {
       $("editStatus").textContent =
         "اجازه ویرایش ندارید.";
       return;
@@ -517,7 +545,8 @@
     );
 
     button.disabled = true;
-    $("editStatus").textContent = "در حال ذخیره تغییرات…";
+    $("editStatus").textContent =
+      "در حال ذخیره تغییرات…";
 
     try {
       await db.collection("movies").doc(editingId).update({
@@ -598,6 +627,7 @@
 
   $("login").onsubmit = async e => {
     e.preventDefault();
+
     if (!adminMode) return;
 
     try {
@@ -678,7 +708,9 @@
         createdBy: user.uid
       });
 
-      status.textContent = "با موفقیت منتشر شد.";
+      status.textContent =
+        "با موفقیت منتشر شد.";
+
       $("upload").reset();
     } catch (error) {
       status.textContent =
