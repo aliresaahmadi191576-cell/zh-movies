@@ -1,3 +1,4 @@
+
 name: Build Zh Movies APK
 
 on:
@@ -26,6 +27,17 @@ jobs:
         run: |
           sdkmanager --install "platform-tools" "platforms;android-35" "build-tools;35.0.0"
 
+      - name: Restore signing key
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ZH_MOVIES_KEYSTORE }}
+        run: |
+          if [ -z "$KEYSTORE_BASE64" ]; then
+            echo "Missing ZH_MOVIES_KEYSTORE secret"
+            exit 1
+          fi
+          printf '%s' "$KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/zh-movies-release.jks"
+          chmod 600 "$RUNNER_TEMP/zh-movies-release.jks"
+
       - name: Create Android project
         run: |
           mkdir -p android-app/app/src/main/java/com/zhmovies/app
@@ -48,6 +60,7 @@ jobs:
               <path android:fillColor="#A020F0" android:pathData="M239,450L273,475L239,500Z"/>
           </vector>
           EOF
+
           cat > android-app/settings.gradle <<'EOF'
           pluginManagement {
               repositories {
@@ -81,26 +94,30 @@ jobs:
           android {
               namespace 'com.zhmovies.app'
               compileSdk 35
-          signingConfigs {
-          release {
-          storeFile file(System.getenv('ZH_KEYSTORE_FILE'))
-          storePassword System.getenv('ZH_MOVIES_KEYSTORE_PASSWORD')
-          keyAlias 'zhmovies'
-          keyPassword System.getenv('ZH_MOVIES_KEY_PASSWORD')
-    }
-}
+
+              signingConfigs {
+                  release {
+                      storeFile file(System.getenv('ZH_KEYSTORE_FILE'))
+                      storePassword System.getenv('ZH_MOVIES_KEYSTORE_PASSWORD')
+                      keyAlias 'zhmovies'
+                      keyPassword System.getenv('ZH_MOVIES_KEY_PASSWORD')
+                  }
+              }
+
               defaultConfig {
                   applicationId 'com.zhmovies.app'
                   minSdk 23
                   targetSdk 35
                   versionCode 1
                   versionName '1.0'
-              }buildTypes {
-    release {
-        signingConfig signingConfigs.release
-        minifyEnabled false
-    }
-}
+              }
+
+              buildTypes {
+                  release {
+                      signingConfig signingConfigs.release
+                      minifyEnabled false
+                  }
+              }
           }
           EOF
 
@@ -110,7 +127,7 @@ jobs:
               <application
                   android:label="Zh Movies"
                   android:icon="@drawable/ic_launcher"
-          android:roundIcon="@drawable/ic_launcher"
+                  android:roundIcon="@drawable/ic_launcher"
                   android:theme="@android:style/Theme.Material.Light.NoActionBar"
                   android:usesCleartextTraffic="false">
                   <activity
@@ -157,14 +174,20 @@ jobs:
           }
           EOF
 
-      - name: Build APK
+      - name: Build signed Release APK
+        env:
+          ZH_KEYSTORE_FILE: ${{ runner.temp }}/zh-movies-release.jks
+          ZH_MOVIES_KEYSTORE_PASSWORD: ${{ secrets.ZH_MOVIES_KEYSTORE_PASSWORD }}
+          ZH_MOVIES_KEY_PASSWORD: ${{ secrets.ZH_MOVIES_KEY_PASSWORD }}
         run: |
           cd android-app
           gradle wrapper --gradle-version 8.7
           chmod +x gradlew
-       ./gradlew assembleRelease --no-daemon
-      - name: Upload APK
+          ./gradlew assembleRelease --no-daemon
+
+      - name: Upload signed APK
         uses: actions/upload-artifact@v4
         with:
-          name: zh-movies-apk
-          path: android-app/app/build/outputs/apk/debug/app-debug.apk
+          name: zh-movies-release-apk
+          path: android-app/app/build/outputs/apk/release/app-release.apk
+          if-no-files-found: error
