@@ -773,8 +773,35 @@
 
       button.onclick = () => openEditor(item.id);
 
-      row.append(name, button);
-      container.append(row);
+const deleteButton = document.createElement("button");
+deleteButton.type = "button";
+deleteButton.textContent = "🗑️ حذف";
+deleteButton.style.background = "#b42335";
+deleteButton.style.color = "#fff";
+deleteButton.style.padding = "8px 10px";
+deleteButton.style.borderRadius = "8px";
+
+deleteButton.onclick = async () => {
+  if (!adminMode || !isAdmin(auth.currentUser)) {
+    alert("اجازه حذف ندارید.");
+    return;
+  }
+
+  if (!confirm(`آیا از حذف «${item.title}» مطمئنی؟`)) {
+    return;
+  }
+
+  try {
+    deleteButton.disabled = true;
+    await db.collection("movies").doc(item.id).delete();
+    alert("فیلم با موفقیت حذف شد.");
+  } catch (error) {
+    deleteButton.disabled = false;
+    alert("حذف انجام نشد: " + error.message);
+  }
+};
+
+row.append(name, button, deleteButton);      container.append(row);
     });
   }
 
