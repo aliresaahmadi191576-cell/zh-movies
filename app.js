@@ -729,6 +729,46 @@ favoriteBtn.onclick = () => {
 };
 
 info.append(favoriteBtn);
+      // ⭐ Rating Stars
+const ratingBox = document.createElement("div");
+
+ratingBox.style.display = "flex";
+ratingBox.style.alignItems = "center";
+ratingBox.style.justifyContent = "center";
+ratingBox.style.gap = "6px";
+ratingBox.style.margin = "12px 0";
+ratingBox.style.direction = "ltr";
+
+const movieId = entries[0].id;
+const currentRating = getMovieRating(movieId);
+
+for (let star = 1; star <= 5; star++) {
+  const starBtn = document.createElement("button");
+
+  starBtn.type = "button";
+  starBtn.textContent = star <= currentRating ? "★" : "☆";
+
+  starBtn.style.background = "transparent";
+  starBtn.style.border = "none";
+  starBtn.style.color = "#ffd56a";
+  starBtn.style.fontSize = "28px";
+  starBtn.style.padding = "2px";
+  starBtn.style.cursor = "pointer";
+
+  starBtn.setAttribute(
+    "aria-label",
+    "امتیاز " + star + " از ۵"
+  );
+
+  starBtn.onclick = () => {
+    movieRatings[movieId] = star;
+    render();
+  };
+
+  ratingBox.append(starBtn);
+}
+
+info.append(ratingBox);
       const categories = [
         ...new Set(
           entries.map(x => x.category)
