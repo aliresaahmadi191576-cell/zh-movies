@@ -292,9 +292,6 @@ jobs:
               }
           }
           EOF
-
-      - name: Build signed Release APK
-      
      
       - name: Install new Zh Movies app icon
         run: |
