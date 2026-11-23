@@ -527,7 +527,37 @@
     poster.onerror = () => poster.remove();
 
     const info = document.createElement("div");
-    info.style.cssText = "flex:1;min-width:220px;";
+
+    info.style.cssText = `
+      flex:1 1 280px;
+      min-width:0;
+      width:100%;
+      display:flex;
+      flex-direction:column;
+      justify-content:flex-start;
+      gap:10px;
+    `;
+
+    info.querySelectorAll("*").forEach(el => {
+      el.style.marginTop = "0";
+    });
+
+    if (window.innerWidth <= 600) {
+      hero.style.flexDirection = "column";
+      hero.style.alignItems = "center";
+      hero.style.justifyContent = "flex-start";
+      hero.style.gap = "12px";
+
+      info.style.flex = "0 0 auto";
+      info.style.width = "100%";
+      info.style.textAlign = "center";
+
+      poster.style.width = "150px";
+      poster.style.height = "225px";
+      poster.style.transform = "none";
+
+      actions.style.justifyContent = "center";
+    }
 
     const title = document.createElement("h1");
     title.textContent = item.kind === "series"
