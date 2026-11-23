@@ -317,190 +317,102 @@
     }
   }
 
-  
-  // ========================================
-  // 🎬 ZH MOVIES — CINEMA PLAYER
-  // ========================================
-
+  // 🎬 ZH MOVIES — Cinema Player
   function startVideo(url, area) {
     if (!url) return;
 
-    // Close an existing player first.
-    const existing = document.getElementById("zhVideoOverlay");
-    if (existing && typeof existing.zhClose === "function") {
-      existing.zhClose();
-    }
+    const previous = document.getElementById("zhVideoOverlay");
+    if (previous && typeof previous.zhClose === "function") previous.zhClose();
 
     const overlay = document.createElement("div");
     overlay.id = "zhVideoOverlay";
-
+    overlay.setAttribute("role", "dialog");
+    overlay.setAttribute("aria-label", "پخش‌کننده ژ موویز");
     overlay.style.cssText = `
-      position: fixed;
-      inset: 0;
-      z-index: 999999;
-      background: rgba(0, 0, 0, 0.97);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 55px 10px 30px;
-      box-sizing: border-box;
-      direction: rtl;
+      position:fixed;inset:0;z-index:999999;
+      background:rgba(0,0,0,.97);display:flex;
+      align-items:center;justify-content:center;
+      padding:65px 12px 25px;box-sizing:border-box;
+      direction:rtl;
     `;
 
     const video = makeVideo(url);
-
     video.style.cssText = `
-      display: block;
-      width: 100%;
-      max-width: 1100px;
-      max-height: 85dvh;
-      height: auto;
-      aspect-ratio: 16 / 9;
-      object-fit: contain;
-      background: #000;
-      border-radius: 14px;
-      box-shadow: 0 0 45px rgba(142, 65, 190, 0.3);
+      display:block;width:100%;max-width:1100px;
+      max-height:80dvh;height:auto;aspect-ratio:16/9;
+      object-fit:contain;background:#000;border-radius:14px;
+      box-shadow:0 0 45px rgba(142,65,190,.3);
     `;
 
     const toolbar = document.createElement("div");
-
     toolbar.style.cssText = `
-      position: absolute;
-      top: max(12px, env(safe-area-inset-top));
-      left: 12px;
-      right: 12px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      z-index: 10;
+      position:absolute;top:max(12px,env(safe-area-inset-top));
+      left:12px;right:12px;display:flex;
+      justify-content:space-between;align-items:center;
+      gap:12px;z-index:10;
     `;
 
     const closeButton = document.createElement("button");
     closeButton.type = "button";
     closeButton.textContent = "✕ بستن";
-
     const fullscreenButton = document.createElement("button");
     fullscreenButton.type = "button";
     fullscreenButton.textContent = "⛶ تمام‌صفحه";
 
     [closeButton, fullscreenButton].forEach(button => {
       button.style.cssText = `
-        background: rgba(55, 28, 75, 0.8);
-        color: #ffd56a;
-        border: 1px solid rgba(255, 213, 106, 0.45);
-        border-radius: 12px;
-        padding: 10px 15px;
-        font-size: 13px;
-        font-weight: bold;
-        cursor: pointer;
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
+        background:rgba(55,28,75,.85);color:#ffd56a;
+        border:1px solid rgba(255,213,106,.45);
+        border-radius:12px;padding:10px 15px;
+        font-size:13px;font-weight:bold;cursor:pointer;
+        backdrop-filter:blur(12px);
       `;
     });
 
     toolbar.append(closeButton, fullscreenButton);
     overlay.append(toolbar, video);
-    document.body.appendChild(overlay);
+    document.body.append(overlay);
 
-    const previousOverflow = document.body.style.overflow;
+    const oldOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-
     let closed = false;
 
     function closePlayer() {
       if (closed) return;
       closed = true;
-
       video.pause();
-
-      if (document.fullscreenElement === video) {
+      if (document.fullscreenElement === video && document.exitFullscreen) {
         document.exitFullscreen().catch(() => {});
       }
-
       video.removeAttribute("src");
       video.load();
-
       overlay.remove();
-      document.body.style.overflow = previousOverflow;
-
-      document.removeEventListener("keydown", handleKeydown);
-      window.removeEventListener("popstate", handleBack);
+      document.body.style.overflow = oldOverflow;
+      document.removeEventListener("keydown", onKeydown);
     }
 
-    function handleKeydown(event) {
-      if (event.key === "Escape") {
-        closePlayer();
-      }
-    }
-
-    function handleBack() {
-      closePlayer();
+    function onKeydown(event) {
+      if (event.key === "Escape") closePlayer();
     }
 
     closeButton.onclick = closePlayer;
-
     fullscreenButton.onclick = () => {
       if (document.fullscreenElement === video) {
         document.exitFullscreen().catch(() => {});
-        return;
-      }
-
-      if (video.requestFullscreen) {
+      } else if (video.requestFullscreen) {
         video.requestFullscreen().catch(() => {});
       } else if (video.webkitEnterFullscreen) {
         video.webkitEnterFullscreen();
       }
     };
 
-    video.addEventListener("webkitendfullscreen", () => {
-      // Return to the player overlay on iOS.
-    });
-
-    document.addEventListener("keydown", handleKeydown);
-    window.addEventListener("popstate", handleBack);
-
+    document.addEventListener("keydown", onKeydown);
     overlay.zhClose = closePlayer;
-
-    // Start playback after opening the overlay.
-    const playPromise = video.play();
-
-    if (playPromise && typeof playPromise.catch === "function") {
-      playPromise.catch(() => {
-        // User can start playback using native controls.
-      });
+    const playback = video.play();
+    if (playback && typeof playback.catch === "function") {
+      playback.catch(() => {});
     }
   }
-
-
-  const video = makeVideo(url);
-
-  video.style.position = "fixed";
-  video.style.inset = "0";
-  video.style.width = "100%";
-  video.style.height = "100%";
-  video.style.margin = "0";
-  video.style.borderRadius = "0";
-  video.style.background = "#000";
-  video.style.zIndex = "99999";
-
-  document.body.appendChild(video);
-
-  const closeVideo = () => {
-    video.pause();
-    video.remove();
-  };
-
-  video.addEventListener("fullscreenchange", () => {
-    if (!document.fullscreenElement) {
-      closeVideo();
-    }
-  });
-
-  video.addEventListener("webkitendfullscreen", closeVideo);
-
-  playFullscreen(video);
-}
 
   // ========================================
   // 🔥 تازه‌های ژ موویز
