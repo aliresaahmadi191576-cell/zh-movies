@@ -527,3 +527,48 @@ footer {
     grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
   }
 }
+
+/* ZH MOVIES CINEMA - LATEST SECTION */
+
+#zhLatest {
+  width: 92% !important;
+  max-width: 1500px !important;
+  margin: 16px auto 24px !important;
+  padding: 18px !important;
+}
+
+#zhLatestGrid {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 12px !important;
+}
+
+#zhLatestGrid article {
+  min-width: 0 !important;
+  overflow: hidden;
+}
+
+#zhLatestGrid article > div:first-child {
+  aspect-ratio: 16 / 9 !important;
+  width: 100% !important;
+  height: auto !important;
+}
+
+#zhLatestGrid article > div:first-child img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}
+
+@media (min-width: 768px) {
+  #zhLatestGrid {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 16px !important;
+  }
+}
+
+@media (min-width: 1200px) {
+  #zhLatestGrid {
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  }
+}
