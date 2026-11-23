@@ -422,11 +422,39 @@
 
     const overlay = document.createElement("div");
     overlay.id = "zhMovieDetails";
+    
     overlay.style.cssText = `
-      position:fixed;inset:0;z-index:99990;
-      overflow-y:auto;background:#10091b;
-      color:white;direction:rtl;
+      position:fixed;
+      inset:0;
+      z-index:99990;
+      overflow-y:auto;
+      background:#10091b;
+      color:white;
+      direction:rtl;
+      isolation:isolate;
     `;
+
+    // Cinematic blurred poster background
+    const backdrop = document.createElement("div");
+    backdrop.style.cssText = `
+      position:fixed;
+      inset:0;
+      z-index:-1;
+      background:
+        linear-gradient(
+          180deg,
+          rgba(16,9,27,.45) 0%,
+          rgba(16,9,27,.85) 55%,
+          #10091b 100%
+        ),
+        url("${item.poster || ""}") center 20% / cover no-repeat;
+      filter:blur(18px);
+      transform:scale(1.08);
+      pointer-events:none;
+    `;
+
+    overlay.append(backdrop);
+
 
     const panel = document.createElement("div");
     panel.style.cssText = `
