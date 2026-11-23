@@ -788,6 +788,139 @@ playerArea.style.display = "none";
     });
   }
 
+  // 🏆 ZH MOVIES — Top Rated
+  const topRatedSection = document.createElement("section");
+  topRatedSection.id = "zhTopRated";
+  topRatedSection.style.cssText = `
+    width:94%;max-width:1700px;margin:18px auto 24px;
+    padding:18px;border-radius:22px;direction:rtl;
+    background:linear-gradient(135deg,#241034,#37164d);
+    border:1px solid rgba(255,213,106,.35);
+    box-shadow:0 10px 28px #0004;
+  `;
+
+  const topRatedTitle = document.createElement("h2");
+  topRatedTitle.textContent = "🏆 محبوب‌ترین‌های ژ موویز";
+  topRatedTitle.style.cssText =
+    "color:#ffd56a;font-size:18px;margin:0 0 6px;";
+
+  const topRatedSubtitle = document.createElement("p");
+  topRatedSubtitle.textContent = "برترین آثار با رأی کاربران";
+  topRatedSubtitle.style.cssText =
+    "color:#d8c4e5;font-size:12px;margin:0 0 16px;";
+
+  const topRatedGrid = document.createElement("div");
+  topRatedGrid.id = "zhTopRatedGrid";
+  topRatedGrid.style.cssText = `
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:12px;
+  `;
+
+  topRatedSection.append(
+    topRatedTitle, topRatedSubtitle, topRatedGrid
+  );
+  latestSection.insertAdjacentElement(
+    "afterend", topRatedSection
+  );
+
+  const topRatedStyle = document.createElement("style");
+  topRatedStyle.textContent = `
+    @media(min-width:768px) {
+      #zhTopRatedGrid {
+        grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+      }
+    }
+    #zhTopRatedGrid article {
+      min-width:0;overflow:hidden;border-radius:15px;
+      background:linear-gradient(155deg,#301b43,#170c25);
+      border:1px solid #ffd56a55;
+      display:flex;flex-direction:column;
+      transition:transform .3s,border-color .3s;
+    }
+    #zhTopRatedGrid article:hover {
+      transform:translateY(-4px);
+      border-color:#ffd56a;
+    }
+    #zhTopRatedGrid img {
+      display:block;width:100%;aspect-ratio:16/9;
+      object-fit:cover;
+    }
+    #zhTopRatedGrid .zh-top-info {
+      padding:11px;display:flex;flex-direction:column;
+      gap:8px;flex:1;
+    }
+    #zhTopRatedGrid h3 {
+      margin:0;color:white;font-size:13px;
+      overflow-wrap:anywhere;
+    }
+    #zhTopRatedGrid p {
+      margin:0;color:#ffd56a;font-size:12px;
+    }
+    #zhTopRatedGrid button {
+      margin-top:auto;padding:9px 5px;
+      background:linear-gradient(110deg,#ffe9a5,#e9b840);
+      color:#261132;border:0;border-radius:10px;
+      font-weight:800;font-size:12px;
+    }
+    @media(prefers-reduced-motion:reduce) {
+      #zhTopRatedGrid article {transition:none;}
+    }
+  `;
+  document.head.append(topRatedStyle);
+
+  function renderTopRated() {
+    topRatedGrid.replaceChildren();
+
+    const ranked = items
+      .filter(item =>
+        (movieRatingCounts[item.id] || 0) > 0
+      )
+      .sort((a, b) =>
+        getMovieRating(b.id) - getMovieRating(a.id) ||
+        (movieRatingCounts[b.id] || 0) -
+        (movieRatingCounts[a.id] || 0)
+      )
+      .slice(0, 6);
+
+    topRatedSection.hidden = ranked.length === 0;
+
+    ranked.forEach(item => {
+      const card = document.createElement("article");
+
+      if (item.poster) {
+        const img = document.createElement("img");
+        img.src = item.poster;
+        img.alt = item.title;
+        img.loading = "lazy";
+        card.append(img);
+      }
+
+      const info = document.createElement("div");
+      info.className = "zh-top-info";
+
+      const title = document.createElement("h3");
+      title.textContent = item.kind === "series"
+        ? seriesName(item.title) : item.title;
+
+      const rating = document.createElement("p");
+      rating.textContent =
+        "⭐ " + getMovieRating(item.id).toFixed(1) +
+        " از ۵ • " + movieRatingCounts[item.id] + " رأی";
+
+      const watch = document.createElement("button");
+      watch.type = "button";
+      watch.textContent = item.kind === "series"
+        ? "▶ قسمت " + episodeNumber(item.title)
+        : "▶ تماشا";
+      watch.onclick = () => startVideo(item.url);
+
+      info.append(title, rating, watch);
+      card.append(info);
+      topRatedGrid.append(card);
+    });
+  }
+
   // ========================================
   // 🎬 آرشیو و دسته‌بندی‌ها
   // ========================================
