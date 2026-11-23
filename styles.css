@@ -641,3 +641,35 @@ footer {
     font-size: 12px;
   }
 }
+
+/* ZH MOVIES - COMPACT CARD DETAILS */
+
+#grid .info {
+  gap: 5px !important;
+  padding: 10px !important;
+}
+
+#grid .info > button:not(.yellow) {
+  margin: 0 !important;
+  padding: 7px 10px !important;
+  font-size: 12px !important;
+}
+
+#grid .info > div {
+  margin: 2px 0 !important;
+  gap: 3px !important;
+}
+
+#grid .info > div button {
+  padding: 2px !important;
+  font-size: 22px !important;
+  line-height: 1.2 !important;
+}
+
+#grid .info > p {
+  margin: 0 !important;
+}
+
+#grid .info > .yellow {
+  margin-top: auto !important;
+}
