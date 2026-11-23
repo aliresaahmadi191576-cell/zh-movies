@@ -1015,8 +1015,18 @@ playerArea.style.display = "none";
       watch.onclick = () => startVideo(item.url);
 
       info.append(title, rating, watch);
+    
+      // 🎬 Open details from Top Rated
+      card.style.cursor = "pointer";
+
+      card.onclick = event => {
+        if (event.target.closest("button")) return;
+        openMovieDetails(item);
+      };
+
       card.append(info);
       topRatedGrid.append(card);
+
     });
   }
 
