@@ -19,67 +19,71 @@
   let items = [];
   let filter = "all";
   let categoryFilter = "all";
+
   // ⭐ Zh Movies Rating System
-let movieRatings = {};
-let movieRatingCounts = {};
-function getMovieRating(movieId) {
-  return movieRatings[movieId] || 0;
-}
-  let searchQuery = "";
-const FAVORITES_KEY = "zh_movies_favorites";
+  let movieRatings = {};
+  let movieRatingCounts = {};
 
-let favorites = [];
-
-try {
-  const saved = JSON.parse(
-    localStorage.getItem(FAVORITES_KEY) || "[]"
-  );
-
-  favorites = Array.isArray(saved) ? saved : [];
-} catch (error) {
-  favorites = [];
-}
-
-function isFavorite(id) {
-  return favorites.includes(id);
-}
-
-function toggleFavorite(id) {
-  if (isFavorite(id)) {
-    favorites = favorites.filter(x => x !== id);
-  } else {
-    favorites.push(id);
+  function getMovieRating(movieId) {
+    return movieRatings[movieId] || 0;
   }
 
-  localStorage.setItem(
-    FAVORITES_KEY,
-    JSON.stringify(favorites)
-  );
+  let searchQuery = "";
+  const FAVORITES_KEY = "zh_movies_favorites";
+  let favorites = [];
 
-  render();
-  renderFavorites();
-}
-const searchInput = document.getElementById("zhSearchInput");
+  try {
+    const saved = JSON.parse(
+      localStorage.getItem(FAVORITES_KEY) || "[]"
+    );
+    favorites = Array.isArray(saved) ? saved : [];
+  } catch (error) {
+    favorites = [];
+  }
 
-if (searchInput) {
-  searchInput.addEventListener("input", () => {
-    searchQuery = searchInput.value
-      .trim()
-      .toLocaleLowerCase("fa")
-      .replace(/ي/g, "ی")
-      .replace(/ك/g, "ک");
+  function isFavorite(id) {
+    return favorites.includes(id);
+  }
+
+  function toggleFavorite(id) {
+    if (isFavorite(id)) {
+      favorites = favorites.filter(x => x !== id);
+    } else {
+      favorites.push(id);
+    }
+
+    localStorage.setItem(
+      FAVORITES_KEY,
+      JSON.stringify(favorites)
+    );
 
     render();
-  });
-}
- async function ensureRatingUser() {
-  if (auth.currentUser) {
-    return auth.currentUser;
+    renderFavorites();
   }
 
-  const result = await auth.signInAnonymously();
-  return result.user;
-}
+  const searchInput = document.getElementById("zhSearchInput");
+
+  if (searchInput) {
+    searchInput.addEventListener("input", () => {
+      searchQuery = searchInput.value
+        .trim()
+        .toLocaleLowerCase("fa")
+        .replace(/ي/g, "ی")
+        .replace(/ك/g, "ک");
+
+      render();
+    });
+  }
+
+  async function ensureRatingUser() {
+    if (auth.currentUser) {
+      return auth.currentUser;
+    }
+
+    const result = await auth.signInAnonymously();
+    return result.user;
+  }
+
   let currentUser = null;
   let editingId = null;
 
@@ -443,6 +447,119 @@ if (searchInput) {
     return 0;
   }
 
+  // ZH cinematic glass slider: poster-only, no embedded video.
+  const zhSliderStyle = document.createElement("style");
+  zhSliderStyle.textContent = `
+    .hero.zh-cinema {display:block;min-height:0;padding:0;aspect-ratio:16/9;max-height:480px;background:#160d23;overflow:hidden;touch-action:pan-y;}
+    .zh-cinema-stage {position:relative;width:100%;height:100%;min-height:210px;perspective:1100px;}
+    .zh-cinema-slide {position:absolute;inset:0;opacity:0;transform:translateX(20%) rotateY(-12deg) scale(.94);transition:opacity .65s ease,transform .65s cubic-bezier(.2,.8,.2,1);pointer-events:none;}
+    .zh-cinema-slide.is-active {opacity:1;transform:translateX(0) rotateY(0) scale(1);pointer-events:auto;z-index:2;}
+    .zh-cinema-slide.is-before {transform:translateX(-20%) rotateY(12deg) scale(.94);}
+    .zh-cinema-slide img {width:100%;height:100%;object-fit:cover;display:block;}
+    .zh-cinema-slide::after {content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(10,5,20,.96),rgba(16,8,28,.18) 75%),linear-gradient(270deg,rgba(25,8,39,.4),transparent);pointer-events:none;}
+    .zh-cinema-copy {position:absolute;z-index:3;right:5%;bottom:12%;left:5%;width:min(520px,90%);padding:12px 16px;background:rgba(43,21,62,.42);border:1px solid rgba(255,213,106,.35);border-radius:18px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 12px 30px #0005;}
+    .zh-cinema-copy h2 {font-size:clamp(19px,3vw,32px);margin:3px 0 6px;color:#fff;line-height:1.5;}
+    .zh-cinema-copy p {font-size:12px;margin:0 0 9px;color:#f0dff7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .zh-cinema-copy button {background:linear-gradient(135deg,#ffe9a5,#e9b840);color:#261132;padding:8px 17px;font-size:12px;}
+    .zh-cinema-dots {position:absolute;z-index:5;bottom:10px;left:0;right:0;display:flex;justify-content:center;gap:7px;direction:ltr;}
+    .zh-cinema-dots button {width:7px;height:7px;min-width:7px;padding:0;border:0;border-radius:20px;background:#ffffff80;transition:width .25s;}
+    .zh-cinema-dots button.is-active {width:24px;background:#ffd56a;}
+    .zh-cinema-arrow {position:absolute;z-index:5;top:44%;width:34px;height:34px;padding:0;border:1px solid #ffffff55;border-radius:50%;background:#25133488;color:white;font-size:23px;backdrop-filter:blur(8px);}
+    .zh-cinema-arrow.prev {right:9px;} .zh-cinema-arrow.next {left:9px;}
+    @media(max-width:600px){.hero.zh-cinema {aspect-ratio:4/3;max-height:350px;}.zh-cinema-copy{bottom:12%;padding:10px 12px;}.zh-cinema-copy p{font-size:11px;}.zh-cinema-arrow{width:28px;height:28px;font-size:19px;}}
+    @media(prefers-reduced-motion:reduce){.zh-cinema-slide{transition:none;}}
+  `;
+  document.head.append(zhSliderStyle);
+  const zhHero = document.querySelector(".hero");
+  let zhSlideIndex = 0;
+  let zhSlideTimer = null;
+  function renderCinemaSlider() {
+    if (!zhHero) return;
+    const featured = [...items].filter(item => item.poster && /^https:\/\//i.test(item.poster))
+      .sort((a,b) => getCreatedTime(b) - getCreatedTime(a)).slice(0, 6);
+    if (!featured.length) return; // Keep original welcome hero if no posters exist.
+    if (zhSlideTimer) clearInterval(zhSlideTimer);
+    zhHero.classList.add("zh-cinema");
+    zhHero.replaceChildren();
+    const stage = document.createElement("div");
+    stage.className = "zh-cinema-stage";
+    const slides = [], dots = [];
+    featured.forEach((item,i) => {
+      const slide = document.createElement("div");
+      slide.className = "zh-cinema-slide";
+      const img = document.createElement("img");
+      img.src = item.poster;
+      img.alt = item.title;
+      img.loading = i === 0 ? "eager" : "lazy";
+      img.onerror = () => { img.style.visibility = "hidden"; slide.style.background = "linear-gradient(135deg,#4a2668,#10091b)"; };
+      const copy = document.createElement("div");
+      copy.className = "zh-cinema-copy";
+      const heading = document.createElement("h2");
+      heading.textContent = item.kind === "series" ? seriesName(item.title) : item.title;
+      const details = document.createElement("p");
+      details.textContent = (item.kind === "series" ? "📺 سریال" : "🎬 فیلم") + "  •  " + (CATEGORIES[item.category] || "ژ موویز");
+      const watch = document.createElement("button");
+      watch.type = "button";
+      watch.textContent = item.kind === "series" ? "▶ تماشای قسمت " + episodeNumber(item.title) : "▶ تماشای فیلم";
+      watch.onclick = () => startVideo(item.url);
+      copy.append(heading,details,watch);
+      slide.append(img,copy);
+      stage.append(slide);
+      slides.push(slide);
+    });
+    const controls = document.createElement("div");
+    controls.className = "zh-cinema-dots";
+    featured.forEach((item,i) => {
+      const dot = document.createElement("button");
+      dot.type = "button";
+      dot.setAttribute("aria-label", "نمایش اسلاید " + (i+1));
+      dot.onclick = () => { showSlide(i); restartTimer(); };
+      controls.append(dot);
+      dots.push(dot);
+    });
+    function showSlide(index) {
+      zhSlideIndex = (index + slides.length) % slides.length;
+      slides.forEach((slide,i) => {
+        slide.classList.toggle("is-active", i === zhSlideIndex);
+        slide.classList.toggle("is-before", i < zhSlideIndex);
+        slide.setAttribute("aria-hidden", i === zhSlideIndex ? "false" : "true");
+        slide.querySelector("button").tabIndex = i === zhSlideIndex ? 0 : -1;
+        dots[i].classList.toggle("is-active", i === zhSlideIndex);
+      });
+    }
+    function restartTimer() {
+      if (zhSlideTimer) clearInterval(zhSlideTimer);
+      if (slides.length > 1 && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        zhSlideTimer = setInterval(() => {
+          if (!document.hidden && zhHero.getClientRects().length) showSlide(zhSlideIndex+1);
+        },5000);
+      }
+    }
+    if (slides.length > 1) {
+      for (const [cls,delta,label] of [["prev",-1,"اسلاید قبلی"],["next",1,"اسلاید بعدی"]]) {
+        const arrow = document.createElement("button");
+        arrow.type = "button";
+        arrow.className = "zh-cinema-arrow " + cls;
+        arrow.textContent = delta < 0 ? "‹" : "›";
+        arrow.setAttribute("aria-label",label);
+        arrow.onclick = () => { showSlide(zhSlideIndex+delta); restartTimer(); };
+        stage.append(arrow);
+      }
+      let startX = null, startY = null;
+      stage.addEventListener("touchstart",e => {startX=e.touches[0].clientX;startY=e.touches[0].clientY;},{passive:true});
+      stage.addEventListener("touchend",e => {
+        if(startX === null) return;
+        const dx=e.changedTouches[0].clientX-startX;
+        const dy=e.changedTouches[0].clientY-startY;
+        if(Math.abs(dx)>45 && Math.abs(dx)>Math.abs(dy)*1.2){showSlide(zhSlideIndex+(dx>0?-1:1));restartTimer();}
+        startX=null;startY=null;
+      },{passive:true});
+    }
+    zhHero.append(stage,controls);
+    showSlide(Math.min(zhSlideIndex,slides.length-1));
+    restartTimer();
+  }
+
   function renderLatest() {
     latestGrid.replaceChildren();
 
@@ -610,6 +727,7 @@ playerArea.style.display = "none";
   // 🎬 آرشیو و دسته‌بندی‌ها
   // ========================================
 
+
   function render() {
     const grid = categoryFilter === "all"
       ? $("grid")
@@ -628,14 +746,14 @@ playerArea.style.display = "none";
         x.category === categoryFilter;
 
       const normalizedTitle = x.title
-  .toLocaleLowerCase("fa")
-  .replace(/ي/g, "ی")
-  .replace(/ك/g, "ک");
+        .toLocaleLowerCase("fa")
+        .replace(/ي/g, "ی")
+        .replace(/ك/g, "ک");
 
-const searchMatches =
-  !searchQuery || normalizedTitle.includes(searchQuery);
+      const searchMatches =
+        !searchQuery || normalizedTitle.includes(searchQuery);
 
-return kindMatches && categoryMatches && searchMatches;
+      return kindMatches && categoryMatches && searchMatches;
     });
 
     // Every Firestore item has its own card.
@@ -717,99 +835,104 @@ return kindMatches && categoryMatches && searchMatches;
         : "🎬 فیلم";
 
       info.append(title, details);
-const favoriteBtn = document.createElement("button");
 
-favoriteBtn.type = "button";
-favoriteBtn.textContent = isFavorite(entries[0].id)
-  ? "❤️ حذف از علاقه‌مندی‌ها"
-  : "🤍 افزودن به علاقه‌مندی‌ها";
+      // ❤️ Favorites
+      const favoriteBtn = document.createElement("button");
 
-favoriteBtn.style.background = "#39224f";
-favoriteBtn.style.color = "#ffd56a";
-favoriteBtn.style.border = "1px solid #b18a4d";
-favoriteBtn.style.borderRadius = "12px";
-favoriteBtn.style.padding = "10px";
-favoriteBtn.style.marginBottom = "10px";
-favoriteBtn.style.cursor = "pointer";
+      favoriteBtn.type = "button";
+      favoriteBtn.textContent = isFavorite(entries[0].id)
+        ? "❤️ حذف از علاقه‌مندی‌ها"
+        : "🤍 افزودن به علاقه‌مندی‌ها";
 
-favoriteBtn.onclick = () => {
-  toggleFavorite(entries[0].id);
-};
+      favoriteBtn.style.background = "#39224f";
+      favoriteBtn.style.color = "#ffd56a";
+      favoriteBtn.style.border = "1px solid #b18a4d";
+      favoriteBtn.style.borderRadius = "12px";
+      favoriteBtn.style.padding = "10px";
+      favoriteBtn.style.marginBottom = "10px";
+      favoriteBtn.style.cursor = "pointer";
 
-info.append(favoriteBtn);
+      favoriteBtn.onclick = () => {
+        toggleFavorite(entries[0].id);
+      };
+
+      info.append(favoriteBtn);
+
       // ⭐ Rating Stars
-const ratingBox = document.createElement("div");
+      const ratingBox = document.createElement("div");
 
-ratingBox.style.display = "flex";
-ratingBox.style.alignItems = "center";
-ratingBox.style.justifyContent = "center";
-ratingBox.style.gap = "6px";
-ratingBox.style.margin = "12px 0";
-ratingBox.style.direction = "ltr";
+      ratingBox.style.display = "flex";
+      ratingBox.style.alignItems = "center";
+      ratingBox.style.justifyContent = "center";
+      ratingBox.style.gap = "6px";
+      ratingBox.style.margin = "12px 0";
+      ratingBox.style.direction = "ltr";
 
-const movieId = entries[0].id;
-const currentRating = getMovieRating(movieId);
+      const movieId = entries[0].id;
+      const currentRating = getMovieRating(movieId);
 
-for (let star = 1; star <= 5; star++) {
-  const starBtn = document.createElement("button");
+      for (let star = 1; star <= 5; star++) {
+        const starBtn = document.createElement("button");
 
-  starBtn.type = "button";
-  starBtn.textContent = star <= currentRating ? "★" : "☆";
+        starBtn.type = "button";
+        starBtn.textContent =
+          star <= currentRating ? "★" : "☆";
 
-  starBtn.style.background = "transparent";
-  starBtn.style.border = "none";
-  starBtn.style.color = "#ffd56a";
-  starBtn.style.fontSize = "28px";
-  starBtn.style.padding = "2px";
-  starBtn.style.cursor = "pointer";
+        starBtn.style.background = "transparent";
+        starBtn.style.border = "none";
+        starBtn.style.color = "#ffd56a";
+        starBtn.style.fontSize = "28px";
+        starBtn.style.padding = "2px";
+        starBtn.style.cursor = "pointer";
 
-  starBtn.setAttribute(
-    "aria-label",
-    "امتیاز " + star + " از ۵"
-  );
+        starBtn.setAttribute(
+          "aria-label",
+          "امتیاز " + star + " از ۵"
+        );
 
-  starBtn.onclick = async () => {
-  starBtn.disabled = true;
+        starBtn.onclick = async () => {
+          starBtn.disabled = true;
 
-  try {
-    const user = await ensureRatingUser();
+          try {
+            const user = await ensureRatingUser();
 
-    await db.collection("ratings")
-      .doc(user.uid + "_" + movieId)
-      .set({
-        movieId: movieId,
-        userId: user.uid,
-        score: star
-      });
+            await db.collection("ratings")
+              .doc(user.uid + "_" + movieId)
+              .set({
+                movieId: movieId,
+                userId: user.uid,
+                score: star
+              });
 
-    movieRatings[movieId] = star;
-    render();
+            movieRatings[movieId] = star;
+            render();
 
-  } catch (error) {
-    console.error("Rating error:", error);
-    alert("امتیاز ثبت نشد. دوباره تلاش کن.");
-    starBtn.disabled = false;
-  }
-};
+          } catch (error) {
+            console.error("Rating error:", error);
+            alert("امتیاز ثبت نشد. دوباره تلاش کن.");
+            starBtn.disabled = false;
+          }
+        };
 
-  ratingBox.append(starBtn);
-}
+        ratingBox.append(starBtn);
+      }
 
-info.append(ratingBox);
+      info.append(ratingBox);
+
       const ratingInfo = document.createElement("p");
+      const ratingCount = movieRatingCounts[movieId] || 0;
 
-const ratingCount = movieRatingCounts[movieId] || 0;
+      ratingInfo.style.textAlign = "center";
+      ratingInfo.style.color = "#ffd56a";
+      ratingInfo.style.fontSize = "13px";
 
-ratingInfo.style.textAlign = "center";
-ratingInfo.style.color = "#ffd56a";
-ratingInfo.style.fontSize = "13px";
+      ratingInfo.textContent = ratingCount > 0
+        ? "⭐ " + currentRating.toFixed(1) +
+          " از ۵  •  " + ratingCount + " رأی"
+        : "هنوز امتیازی ثبت نشده";
 
-ratingInfo.textContent = ratingCount > 0
-  ? "⭐ " + currentRating.toFixed(1) +
-    " از ۵  •  " + ratingCount + " رأی"
-  : "هنوز امتیازی ثبت نشده";
+      info.append(ratingInfo);
 
-info.append(ratingInfo);
       const categories = [
         ...new Set(
           entries.map(x => x.category)
@@ -839,7 +962,8 @@ info.append(ratingInfo);
       }
 
       const playerArea = document.createElement("div");
-playerArea.style.display = "none";
+      playerArea.style.display = "none";
+
       if (group.kind === "series") {
         const x = entries[0];
 
@@ -862,7 +986,18 @@ playerArea.style.display = "none";
         const x = entries[0];
 
         if (x.url) {
-          info.append(makeVideo(x.url));
+          const btn = document.createElement("button");
+
+          btn.type = "button";
+          btn.className = "yellow";
+          btn.textContent = "▶ تماشای فیلم";
+          btn.style.padding = "9px 12px";
+
+          btn.onclick = () => {
+            startVideo(x.url);
+          };
+
+          info.append(btn);
         }
       }
 
@@ -870,6 +1005,7 @@ playerArea.style.display = "none";
       grid.append(card);
     });
   }
+
 function renderFavorites() {
   const grid = document.getElementById("favoritesGrid");
   const empty = document.getElementById("favoritesEmpty");
@@ -955,6 +1091,7 @@ function renderFavorites() {
   // ========================================
   // ✏️ مدیریت آثار
   // ========================================
+
 
   function renderAdminList() {
     const container = $("adminMovieList");
@@ -1218,6 +1355,7 @@ Object.keys(totals).forEach(movieId => {
 
       render();
       renderLatest();
+       renderCinemaSlider();
       renderFavorites();
       renderAdminList();
     },
