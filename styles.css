@@ -274,3 +274,21 @@ footer {
 @media (prefers-reduced-motion: reduce) {
   #grid .card, .hero .yellow { transition: none; }
 }
+
+/* ZH MOVIES — Centered cinematic slider */
+.hero.zh-cinema {
+  width: 94% !important;
+  max-width: 1700px !important;
+  margin: 20px auto 14px !important;
+  aspect-ratio: 16 / 9;
+  max-height: none !important;
+  padding: 0 !important;
+}
+
+@media (max-width: 600px) {
+  .hero.zh-cinema {
+    width: 94% !important;
+    margin: 14px auto 10px !important;
+    aspect-ratio: 4 / 3;
+  }
+}
