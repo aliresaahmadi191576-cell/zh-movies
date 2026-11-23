@@ -609,6 +609,59 @@
       description,
       actions
     );
+    
+    // 📱 ZH MOVIES — Mobile Details Layout
+    const mobileDetailsStyle = document.createElement("style");
+    mobileDetailsStyle.textContent = `
+      @media (max-width: 600px) {
+        #zhMovieDetails > div:not(:first-child) {
+          padding: 14px !important;
+        }
+
+        #zhMovieDetails .zh-details-hero {
+          display: flex !important;
+          flex-direction: column !important;
+          align-items: stretch !important;
+          gap: 18px !important;
+          padding: 18px !important;
+        }
+
+        #zhMovieDetails .zh-details-poster {
+          width: 150px !important;
+          max-width: 100% !important;
+          height: 225px !important;
+          margin: 0 auto !important;
+          transform: none !important;
+        }
+
+        #zhMovieDetails .zh-details-info {
+          width: 100% !important;
+          min-width: 0 !important;
+          flex: none !important;
+          text-align: center !important;
+        }
+
+        #zhMovieDetails .zh-details-actions {
+          justify-content: center !important;
+          gap: 10px !important;
+        }
+
+        #zhMovieDetails .zh-details-actions button {
+          width: auto !important;
+          flex: 1 1 130px !important;
+          font-size: 13px !important;
+          padding: 12px 10px !important;
+        }
+      }
+    `;
+
+    hero.classList.add("zh-details-hero");
+    poster.classList.add("zh-details-poster");
+    info.classList.add("zh-details-info");
+    actions.classList.add("zh-details-actions");
+
+    overlay.append(mobileDetailsStyle);
+
     hero.append(poster, info);
 
     // 🎬 ZH MOVIES — Similar Titles
