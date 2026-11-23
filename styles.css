@@ -304,3 +304,62 @@ footer {
     border-radius: 18px !important;
   }
 }
+
+/* ZH MOVIES — Premium movie cards */
+#grid .card,
+#zhLatestGrid article {
+  position: relative;
+  border: 1px solid rgba(255, 213, 106, .22);
+  background: linear-gradient(155deg, #301b43, #170c25);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, .3);
+  transition: transform .3s ease,
+              box-shadow .3s ease,
+              border-color .3s ease;
+}
+
+#grid .card:hover,
+#zhLatestGrid article:hover {
+  transform: translateY(-5px);
+  border-color: rgba(255, 213, 106, .75);
+  box-shadow: 0 16px 36px rgba(145, 73, 212, .25);
+}
+
+#grid .thumb img,
+#zhLatestGrid article img {
+  transition: transform .5s ease;
+}
+
+#grid .card:hover .thumb img,
+#zhLatestGrid article:hover img {
+  transform: scale(1.055);
+}
+
+#grid .info > .yellow,
+#zhLatestGrid article button {
+  background: linear-gradient(110deg, #ffe9a5, #e9b840);
+  color: #261132;
+  border-radius: 11px;
+  font-weight: 800;
+  transition: filter .25s ease, transform .25s ease;
+}
+
+#grid .info > .yellow:hover,
+#zhLatestGrid article button:hover {
+  filter: brightness(1.12);
+}
+
+@media (max-width: 600px) {
+  #grid .card:active,
+  #zhLatestGrid article:active {
+    transform: scale(.985);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #grid .card,
+  #zhLatestGrid article,
+  #grid .thumb img,
+  #zhLatestGrid article img {
+    transition: none;
+  }
+}
