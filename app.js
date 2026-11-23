@@ -414,6 +414,96 @@
     }
   }
 
+  // 🎬 ZH MOVIES — Movie Details
+  function openMovieDetails(item) {
+    if (!item) return;
+
+    document.getElementById("zhMovieDetails")?.remove();
+
+    const overlay = document.createElement("div");
+    overlay.id = "zhMovieDetails";
+    overlay.style.cssText = `
+      position:fixed;inset:0;z-index:99990;
+      overflow-y:auto;background:#10091b;
+      color:white;direction:rtl;
+    `;
+
+    const panel = document.createElement("div");
+    panel.style.cssText = `
+      max-width:1050px;margin:auto;padding:22px;
+    `;
+
+    const close = document.createElement("button");
+    close.textContent = "✕ بازگشت به ژ موویز";
+    close.style.cssText = `
+      background:#39224f;color:#ffd56a;
+      border:1px solid #ffd56a66;
+      border-radius:12px;padding:12px;
+      margin-bottom:20px;cursor:pointer;
+    `;
+    close.onclick = () => overlay.remove();
+
+    const hero = document.createElement("div");
+    hero.style.cssText = `
+      display:flex;flex-wrap:wrap;gap:25px;
+      align-items:center;padding:24px;
+      border-radius:24px;
+      background:linear-gradient(135deg,#3b2054,#160d23);
+      border:1px solid #ffd56a55;
+    `;
+
+    const poster = document.createElement("img");
+    poster.src = item.poster || "";
+    poster.alt = item.title;
+    poster.style.cssText = `
+      width:220px;max-width:100%;
+      border-radius:16px;object-fit:cover;
+    `;
+    poster.onerror = () => poster.remove();
+
+    const info = document.createElement("div");
+    info.style.cssText = "flex:1;min-width:220px;";
+
+    const title = document.createElement("h1");
+    title.textContent = item.kind === "series"
+      ? seriesName(item.title) : item.title;
+    title.style.color = "#ffd56a";
+
+    const rating = document.createElement("p");
+    const count = movieRatingCounts[item.id] || 0;
+    rating.textContent = count
+      ? "⭐ " + getMovieRating(item.id).toFixed(1) +
+        " از ۵ • " + count + " رأی"
+      : "⭐ هنوز امتیازی ثبت نشده";
+
+    const category = document.createElement("p");
+    category.textContent =
+      (item.kind === "series" ? "📺 سریال" : "🎬 فیلم") +
+      " • " + (CATEGORIES[item.category] || "ژ موویز") +
+      (item.year ? " • " + item.year : "");
+
+    const description = document.createElement("p");
+    description.textContent =
+      item.description || "توضیحاتی برای این اثر ثبت نشده است.";
+    description.style.lineHeight = "2";
+
+    const watch = document.createElement("button");
+    watch.textContent = "▶ تماشای اثر";
+    watch.style.cssText = `
+      background:#ffd56a;color:#241034;
+      padding:13px 25px;border:0;
+      border-radius:12px;font-weight:bold;
+      cursor:pointer;
+    `;
+    watch.onclick = () => startVideo(item.url);
+
+    info.append(title, rating, category, description, watch);
+    hero.append(poster, info);
+    panel.append(close, hero);
+    overlay.append(panel);
+    document.body.append(overlay);
+  }
+
   // ========================================
   // 🔥 تازه‌های ژ موویز
   // ========================================
@@ -1199,8 +1289,17 @@ playerArea.style.display = "none";
         }
       }
 
+     
+      // 🎬 Open movie details by tapping the poster or title
+      thumb.style.cursor = "pointer";
+      title.style.cursor = "pointer";
+
+      thumb.onclick = () => openMovieDetails(entries[0]);
+      title.onclick = () => openMovieDetails(entries[0]);
+
       card.append(thumb, info);
       grid.append(card);
+
     });
   }
 
