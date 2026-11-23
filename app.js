@@ -1533,7 +1533,9 @@ Object.keys(totals).forEach(movieId => {
       items = snapshot.docs.map(doc => {
         const x = doc.data();
 
-        return {
+    render();
+  },
+  error => {        return {
           id: doc.id,
           title: x.title || "بدون عنوان",
           kind: x.kind === "series" || x.type === "series"
