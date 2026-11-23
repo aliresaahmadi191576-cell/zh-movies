@@ -1554,11 +1554,12 @@ Object.keys(totals).forEach(movieId => {
       $("notice").textContent =
         items.length + " مورد در آرشیو";
 
-      render();
-      renderLatest();
-       renderCinemaSlider();
-      renderFavorites();
-      renderAdminList();
+    render();
+    renderLatest();
+    renderTopRated();
+    renderCinemaSlider();
+    renderFavorites();
+    renderAdminList();
     },
     () => {
       $("notice").textContent =
