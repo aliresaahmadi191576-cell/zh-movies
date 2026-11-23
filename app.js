@@ -1531,14 +1531,12 @@ Object.keys(totals).forEach(movieId => {
 );
   db.collection("movies").onSnapshot(
     snapshot => {
-      items = snapshot.docs.map(doc => {
-        const x = doc.data();
+     items = snapshot.docs.map(doc => {
+  const x = doc.data();
 
-    render();
-  },
-  error => {        return {
-          id: doc.id,
-          title: x.title || "بدون عنوان",
+  return {
+    id: doc.id,
+    title: x.title || "بدون عنوان",
           kind: x.kind === "series" || x.type === "series"
             ? "series" : "movie",
           category: CATEGORIES[x.category]
