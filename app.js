@@ -657,6 +657,14 @@
       watch.type = "button";
       watch.textContent = item.kind === "series" ? "▶ تماشای قسمت " + episodeNumber(item.title) : "▶ تماشای فیلم";
       watch.onclick = () => startVideo(item.url);
+      
+      // 🎬 Open movie details from homepage slider
+      img.style.cursor = "pointer";
+      heading.style.cursor = "pointer";
+
+      img.onclick = () => openMovieDetails(item);
+      heading.onclick = () => openMovieDetails(item);
+
       copy.append(heading,details,watch);
       slide.append(img,copy);
       stage.append(slide);
