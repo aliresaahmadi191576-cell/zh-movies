@@ -562,7 +562,53 @@
     `;
     watch.onclick = () => startVideo(item.url);
 
-    info.append(title, rating, category, description, watch);
+
+    // ❤️ Glass favorite button
+    const favorite = document.createElement("button");
+    favorite.type = "button";
+
+    favorite.style.cssText = `
+      background:rgba(255,255,255,.08);
+      color:#ffd56a;
+      border:1px solid rgba(255,213,106,.45);
+      border-radius:12px;
+      padding:13px 20px;
+      font-weight:bold;
+      cursor:pointer;
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+    `;
+
+    function updateFavoriteButton() {
+      favorite.textContent = isFavorite(item.id)
+        ? "❤️ حذف از علاقه‌مندی‌ها"
+        : "🤍 افزودن به علاقه‌مندی‌ها";
+    }
+
+    updateFavoriteButton();
+
+    favorite.onclick = () => {
+      toggleFavorite(item.id);
+      updateFavoriteButton();
+    };
+
+    const actions = document.createElement("div");
+    actions.style.cssText = `
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      margin-top:22px;
+    `;
+
+    actions.append(watch, favorite);
+
+    info.append(
+      title,
+      rating,
+      category,
+      description,
+      actions
+    );
     hero.append(poster, info);
     panel.append(close, hero);
     overlay.append(panel);
