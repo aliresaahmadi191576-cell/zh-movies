@@ -472,13 +472,27 @@
     close.onclick = () => overlay.remove();
 
     const hero = document.createElement("div");
+   
     hero.style.cssText = `
-      display:flex;flex-wrap:wrap;gap:25px;
-      align-items:center;padding:24px;
-      border-radius:24px;
-      background:linear-gradient(135deg,#3b2054,#160d23);
-      border:1px solid #ffd56a55;
+      display:flex;
+      flex-wrap:wrap;
+      gap:28px;
+      align-items:center;
+      padding:clamp(18px,4vw,40px);
+      border-radius:28px;
+      background:linear-gradient(
+        135deg,
+        rgba(72,35,102,.72),
+        rgba(20,10,34,.65)
+      );
+      border:1px solid rgba(255,213,106,.38);
+      backdrop-filter:blur(24px);
+      -webkit-backdrop-filter:blur(24px);
+      box-shadow:
+        0 25px 70px rgba(0,0,0,.45),
+        inset 0 1px 0 rgba(255,255,255,.12);
     `;
+
 
     const poster = document.createElement("img");
     poster.src = item.poster || "";
