@@ -497,67 +497,24 @@
     const poster = document.createElement("img");
     poster.src = item.poster || "";
     poster.alt = item.title;
-   
-       poster.style.cssText = `
-      width:240px;
-      max-width:100%;
-      aspect-ratio:2/3;
-      object-fit:cover;
-      border-radius:20px;
-      border:1px solid rgba(255,213,106,.5);
-      box-shadow:
-        0 25px 55px rgba(0,0,0,.65),
-        0 0 35px rgba(160,75,220,.25);
-      transform:perspective(900px) rotateY(-5deg);
-      transition:
-        transform .5s ease,
-        box-shadow .5s ease;
+    poster.className = "zh-details-poster";
+    poster.style.cssText = `
+      display:block;width:190px;max-width:100%;height:auto;
+      aspect-ratio:auto;object-fit:contain;flex:0 0 auto;
+      align-self:center;margin:0 auto;
+      border-radius:14px;border:1px solid rgba(255,213,106,.4);
+      box-shadow:0 12px 30px rgba(0,0,0,.4);
+      transform:none;transition:none;
     `;
-
-    poster.onmouseenter = () => {
-      poster.style.transform =
-        "perspective(900px) rotateY(0deg) scale(1.04)";
-    };
-
-    poster.onmouseleave = () => {
-      poster.style.transform =
-        "perspective(900px) rotateY(-5deg)";
-    };
-
     poster.onerror = () => poster.remove();
 
     const info = document.createElement("div");
-
+    info.className = "zh-details-info";
     info.style.cssText = `
-      flex:1 1 280px;
-      min-width:0;
-      width:100%;
-      display:flex;
-      flex-direction:column;
-      justify-content:flex-start;
-      gap:10px;
+      flex:1 1 280px;min-width:0;
+      display:flex;flex-direction:column;
+      justify-content:flex-start;gap:10px;
     `;
-
-    info.querySelectorAll("*").forEach(el => {
-      el.style.marginTop = "0";
-    });
-
-    if (window.innerWidth <= 600) {
-      hero.style.flexDirection = "column";
-      hero.style.alignItems = "center";
-      hero.style.justifyContent = "flex-start";
-      hero.style.gap = "12px";
-
-      info.style.flex = "0 0 auto";
-      info.style.width = "100%";
-      info.style.textAlign = "center";
-
-      poster.style.width = "150px";
-      poster.style.height = "225px";
-      poster.style.transform = "none";
-
-      actions.style.justifyContent = "center";
-    }
 
     const title = document.createElement("h1");
     title.textContent = item.kind === "series"
@@ -640,56 +597,57 @@
       actions
     );
     
-    // 📱 ZH MOVIES — Mobile Details Layout
+    // 📱 ZH MOVIES — Responsive details, no oversized poster
     const mobileDetailsStyle = document.createElement("style");
     mobileDetailsStyle.textContent = `
-      @media (max-width: 600px) {
-        #zhMovieDetails > div:not(:first-child) {
-          padding: 14px !important;
-        }
-
+      #zhMovieDetails .zh-details-poster {
+        width:190px !important;
+        height:auto !important;
+        max-width:100% !important;
+        max-height:290px !important;
+        aspect-ratio:auto !important;
+        object-fit:contain !important;
+        transform:none !important;
+      }
+      #zhMovieDetails .zh-details-info > h1,
+      #zhMovieDetails .zh-details-info > p {margin:0;}
+      @media (max-width: 700px) {
+        #zhMovieDetails .zh-details-panel {padding:14px !important;}
         #zhMovieDetails .zh-details-hero {
-          display: flex !important;
-          flex-direction: column !important;
-          align-items: stretch !important;
-          gap: 18px !important;
-          padding: 18px !important;
+          flex-direction:column !important;
+          flex-wrap:nowrap !important;
+          align-items:center !important;
+          justify-content:flex-start !important;
+          gap:14px !important;
+          padding:16px !important;
+          border-radius:20px !important;
         }
-
         #zhMovieDetails .zh-details-poster {
-          width: 150px !important;
-          max-width: 100% !important;
-          height: 225px !important;
-          margin: 0 auto !important;
-          transform: none !important;
+          width:150px !important;
+          max-height:225px !important;
         }
-
         #zhMovieDetails .zh-details-info {
-          width: 100% !important;
-          min-width: 0 !important;
-          flex: none !important;
-          text-align: center !important;
+          flex:0 0 auto !important;
+          width:100% !important;
+          min-width:0 !important;
+          text-align:center !important;
         }
-
+        #zhMovieDetails .zh-details-info h1 {font-size:23px;line-height:1.5;}
         #zhMovieDetails .zh-details-actions {
-          justify-content: center !important;
-          gap: 10px !important;
+          justify-content:center !important;
+          gap:10px !important;
+          margin-top:12px !important;
         }
-
         #zhMovieDetails .zh-details-actions button {
-          width: auto !important;
-          flex: 1 1 130px !important;
-          font-size: 13px !important;
-          padding: 12px 10px !important;
+          flex:1 1 130px !important;
+          font-size:13px !important;
+          padding:12px 10px !important;
         }
       }
     `;
-
+    panel.classList.add("zh-details-panel");
     hero.classList.add("zh-details-hero");
-    poster.classList.add("zh-details-poster");
-    info.classList.add("zh-details-info");
     actions.classList.add("zh-details-actions");
-
     overlay.append(mobileDetailsStyle);
 
     hero.append(poster, info);
