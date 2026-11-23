@@ -497,10 +497,33 @@
     const poster = document.createElement("img");
     poster.src = item.poster || "";
     poster.alt = item.title;
+   
     poster.style.cssText = `
-      width:220px;max-width:100%;
-      border-radius:16px;object-fit:cover;
+      width:240px;
+      max-width:100%;
+      aspect-ratio:2/3;
+      object-fit:cover;
+      border-radius:20px;
+      border:1px solid rgba(255,213,106,.5);
+      box-shadow:
+        0 25px 55px rgba(0,0,0,.65),
+        0 0 35px rgba(160,75,220,.25);
+      transform:perspective(900px) rotateY(-5deg);
+      transition:
+        transform .5s ease,
+        box-shadow .5s ease;
     `;
+
+    poster.onmouseenter = () => {
+      poster.style.transform =
+        "perspective(900px) rotateY(0deg) scale(1.04)";
+    };
+
+    poster.onmouseleave = () => {
+      poster.style.transform =
+        "perspective(900px) rotateY(-5deg)";
+    };
+
     poster.onerror = () => poster.remove();
 
     const info = document.createElement("div");
