@@ -1,7 +1,7 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap');
 
-/* ZH MOVIES - PURPLE & GOLD */
+/* ZH MOVIES CINEMA | Clean stylesheet */
 :root {
   --dark: #f8edff;
   --purple: #9149d4;
@@ -10,22 +10,23 @@
   --muted: #c4b0d3;
 }
 
-* {
-  box-sizing: border-box;
-}
-
+* { box-sizing: border-box; }
+html { width: 100%; max-width: 100%; overflow-x: hidden; overscroll-behavior-x: none; }
 body {
   margin: 0;
+  min-height: 100vh;
+  max-width: 100%;
+  overflow-x: hidden;
+  overscroll-behavior-x: none;
+  touch-action: pan-y;
+  padding-bottom: calc(85px + env(safe-area-inset-bottom));
   background: linear-gradient(145deg, #21102f, #10091b 55%, #080510);
   color: var(--dark);
   font-family: Vazirmatn, sans-serif;
-  min-height: 100vh;
 }
-
-button, input, select, textarea {
-  font: inherit;
-}
-
+img, video { max-width: 100%; }
+main, section, header, footer { max-width: 100%; }
+button, input, select, textarea { font: inherit; }
 button, .yellow, .purple {
   border: 0;
   border-radius: 12px;
@@ -34,86 +35,62 @@ button, .yellow, .purple {
   font-weight: 700;
 }
 
-/* HEADER */
+/* Header */
 header {
   height: 66px;
-  background: #180d27;
+  padding: 0 6%;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 6%;
+  background: #180d27;
   border-bottom: 1px solid #b18a4d;
   box-shadow: 0 5px 25px #0007;
 }
-
-.logo {
-  direction: ltr;
-  text-decoration: none;
-  color: white;
-  font-weight: 800;
-}
-
+.logo { direction: ltr; text-decoration: none; color: #fff; font-weight: 800; }
 .logo b {
   display: inline-grid;
   place-items: center;
+  margin-left: 8px;
+  padding: 10px;
   background: #40205e;
   color: var(--yellow);
   border: 1px solid var(--yellow);
-  padding: 10px;
   border-radius: 10px;
-  margin-left: 8px;
 }
 
-/* COMPACT CINEMATIC HERO */
+/* Cinematic hero */
 .hero {
   position: relative;
   isolation: isolate;
-  margin: 20px 5% 12px;
-  padding: 30px 6%;
-  min-height: 265px;
-  border-radius: 24px;
-  background:
-    radial-gradient(circle at 15% 35%, #9149d455, transparent 45%),
-    linear-gradient(120deg, #210e35, #582b7c);
-  color: white;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 22px;
+  min-height: 265px;
+  margin: 20px 5% 12px;
+  padding: 30px 6%;
   overflow: hidden;
   border: 1px solid #b18a4d;
+  border-radius: 24px;
   box-shadow: 0 12px 32px #0007;
+  color: #fff;
+  background-image:
+    linear-gradient(270deg, rgba(16, 5, 30, .45) 0%, rgba(16, 5, 30, .05) 65%),
+    url('hero-bg.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
-
-.hero > div:first-child {
-  position: relative;
-  z-index: 2;
-  min-width: 0;
-}
-
-.hero small, #library small {
-  color: #d5b2f1;
-}
-
+.hero > div:first-child { position: relative; z-index: 2; min-width: 0; }
+.hero small, #library small { color: #d5b2f1; }
 .hero h1 {
+  margin: 12px 0;
   font-size: clamp(29px, 4vw, 46px);
   line-height: 1.45;
-  margin: 12px 0;
-  letter-spacing: -0.5px;
+  letter-spacing: -.5px;
 }
-
-.hero h1 span,
-.heading h2 span {
-  color: var(--yellow);
-}
-
-.hero p {
-  color: #eadcf3;
-  margin: 10px 0 18px;
-  font-size: 14px;
-  line-height: 1.9;
-}
-
+.hero h1 span, .heading h2 span { color: var(--yellow); }
+.hero p { margin: 10px 0 18px; color: #eadcf3; font-size: 14px; line-height: 1.9; }
 .yellow {
   display: inline-block;
   background: linear-gradient(135deg, #ffe9a5, #e9b840);
@@ -121,555 +98,179 @@ header {
   text-decoration: none;
   box-shadow: 0 5px 15px #0003;
 }
+.hero .yellow { padding: 11px 22px; transition: transform .2s ease, box-shadow .2s ease; }
+.hero .yellow:hover { transform: translateY(-2px); box-shadow: 0 8px 22px #0005; }
+.purple, .filter.active { background: linear-gradient(135deg, #a05be1, #582681); color: #fff; }
+.poster-art { display: none; }
 
-.hero .yellow {
-  padding: 11px 22px;
-  transition: transform .2s ease, box-shadow .2s ease;
+/* Latest: section and cards are created in app.js */
+#zhLatest {
+  width: 94% !important;
+  max-width: 1700px !important;
+  margin: 16px auto 24px !important;
+  padding: 18px !important;
+  box-sizing: border-box;
 }
-
-.hero .yellow:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 22px #0005;
+#zhLatest h2 { font-size: 17px !important; }
+#zhLatestGrid {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 12px !important;
 }
-
-.purple,
-.filter.active {
-  background: linear-gradient(135deg, #a05be1, #582681);
-  color: white;
+#zhLatestGrid article { min-width: 0 !important; overflow: hidden; }
+#zhLatestGrid article > div:first-child {
+  width: 100% !important;
+  height: auto !important;
+  aspect-ratio: 16 / 9 !important;
+  overflow: hidden !important;
 }
-
-.poster-art {
-  flex: 0 0 145px;
-  width: 145px;
-  height: 185px;
-  background: linear-gradient(140deg, #ffd34f, #bd7cdb);
-  border: 1px solid #ffe7a2;
-  border-radius: 18px;
-  display: grid;
-  place-content: center;
-  text-align: center;
-  color: #28183b;
-  font-size: 43px;
-  font-weight: 800;
-  transform: rotate(6deg);
-  box-shadow: 0 18px 38px #10051c66;
+#zhLatestGrid article > div:first-child img {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
 }
+#zhLatestGrid article h3 { font-size: 12px !important; }
+#zhLatestGrid article button { padding: 7px 4px !important; font-size: 11px !important; }
 
-.poster-art small {
-  font-size: 10px;
-  letter-spacing: 2px;
-}
-
-/* MOVIE LIBRARY */
-#library {
-  padding: 20px 7% 80px;
-}
-
-.heading {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.heading h2 {
-  color: white;
-  margin: 8px 0;
-  font-size: clamp(19px, 2.5vw, 26px);
-}
-
-.filter {
-  background: #261536;
-  border: 1px solid #74518d;
-  color: #eee0fa;
-  margin: 3px;
-}
-
-#notice {
-  color: var(--muted);
-  font-size: 13px;
-}
-
-/* MOVIE CARDS */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-}
-
+/* Library */
+#library { padding: 20px 7% 80px; }
+.heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.heading h2 { margin: 8px 0; color: #fff; font-size: clamp(19px, 2.5vw, 26px); }
+.filter { margin: 3px; background: #261536; border: 1px solid #74518d; color: #eee0fa; }
+#notice { color: var(--muted); font-size: 13px; }
+.grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+#grid, #categoryGrid, .grid > * { min-width: 0; }
 .card {
   min-width: 0;
+  overflow: hidden;
   background: #21132f;
   border: 1px solid #75518c;
   border-radius: 14px;
-  overflow: hidden;
   box-shadow: 0 8px 22px #0007;
 }
-
 .thumb {
+  display: grid;
+  place-items: center;
   width: 100%;
   height: auto;
   aspect-ratio: 16 / 9;
   overflow: hidden;
   background: linear-gradient(140deg, #38204f, #a879d5);
-  display: grid;
-  place-items: center;
   color: var(--yellow);
   font-size: 32px;
 }
+.thumb img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.info { padding: 10px; overflow-wrap: anywhere; }
+.info h3 { margin: 0; color: #ffda77; font-size: 14px; line-height: 1.6; }
+.info p { color: #d2c0de; font-size: 12px; line-height: 1.8; }
+.info video { display: block; width: 100%; margin-top: 12px; border-radius: 12px; background: #000; }
 
-.thumb img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.info {
-  padding: 10px;
-  overflow-wrap: anywhere;
-}
-
-.info h3 {
-  margin: 0;
-  color: #ffda77;
-  font-size: 14px;
-  line-height: 1.6;
-}
-
-.info p {
-  color: #d2c0de;
-  font-size: 12px;
-  line-height: 1.8;
-}
-
-.info video {
-  display: block;
-  width: 100%;
-  margin-top: 12px;
-  border-radius: 12px;
-  background: black;
-}
-
-/* FOOTER */
-footer {
-  text-align: center;
-  padding: 25px;
-  background: #140b20;
-  color: #bca9ca;
-  border-top: 1px solid #60417c;
-}
-
-/* MODALS & ADMIN PANEL */
-.modal {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: #080310dd;
-  align-items: center;
-  justify-content: center;
-  padding: 15px;
-  z-index: 5;
-}
-
-.modal.open {
-  display: flex;
-}
-
-.panel {
-  background: #241532;
-  color: white;
-  border: 1px solid #b18a4d;
-  border-radius: 20px;
-  padding: 25px;
-  width: min(100%, 440px);
-  max-height: 90vh;
-  overflow: auto;
-  position: relative;
-}
-
-.close {
-  float: left;
-  padding: 4px 12px;
-}
-
-.panel form {
-  display: grid;
-  gap: 12px;
-  margin-top: 16px;
-}
-
-.panel input,
-.panel select,
-.panel textarea {
-  padding: 12px;
-  border: 1px solid #76538c;
-  border-radius: 10px;
-  width: 100%;
-  background: #170d22;
-  color: white;
-}
-
-.row {
-  display: flex;
-  gap: 10px;
-}
-
-.pick {
-  display: block;
-  padding: 14px;
-  border: 1px dashed #a879d5;
-  border-radius: 12px;
-  color: var(--purple);
-  cursor: pointer;
-}
-
-.pick input {
-  display: none;
-}
-
-.gold {
-  border-color: #e5c85e;
-  color: #8b6b13;
-}
-
-.bar {
-  height: 7px;
-  background: #eee;
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-.bar div {
-  height: 100%;
-  width: 0;
-  background: var(--purple);
-}
-
-#login[hidden],
-#uploadPanel[hidden] {
-  display: none !important;
-}
-
-/* DESKTOP */
-@media (min-width: 768px) {
-  .grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 18px;
-  }
-}
-
-/* MOBILE */
-@media (max-width: 600px) {
-  header {
-    height: 60px;
-  }
-
-  .hero {
-    margin: 14px 4% 8px;
-    padding: 24px 20px;
-    min-height: 235px;
-    border-radius: 20px;
-    gap: 8px;
-  }
-
-  .hero h1 {
-    font-size: clamp(25px, 7vw, 35px);
-    line-height: 1.5;
-    margin: 10px 0;
-  }
-
-  .hero p {
-    font-size: 12px;
-    margin: 8px 0 15px;
-  }
-
-  .hero .yellow {
-    font-size: 13px;
-    padding: 10px 16px;
-  }
-
-  .poster-art {
-    position: absolute;
-    left: -12px;
-    top: 35px;
-    width: 110px;
-    height: 150px;
-    opacity: .18;
-    transform: rotate(12deg);
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  #library {
-    padding: 15px 5% 80px;
-  }
-
-  .heading {
-    gap: 8px;
-  }
-
-  .heading h2 {
-    font-size: 19px;
-  }
-
-  .filter {
-    padding: 9px 13px;
-    font-size: 12px;
-  }
-
-  .grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
-  }
-
-  .thumb {
-    aspect-ratio: 16 / 9;
-    height: auto;
-  }
-
-  .info {
-    padding: 9px;
-  }
-
-  .info h3 {
-    font-size: 13px;
-  }
-
-  .card {
-    border-radius: 12px;
-  }
-}
-
-.hero {
-  background-image:
-    linear-gradient(
-      270deg,
-      rgba(16, 5, 30, 0.45) 0%,
-      rgba(16, 5, 30, 0.05) 65%
-    ),
-    url("hero-bg.png");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-
-.poster-art {
-  display: none;
-}
-
-/* 🔥 تازه‌های ژ موویز - حالت جمع‌وجور */
-
-#zhLatest {
-  margin: 12px auto !important;
-  padding: 14px !important;
-  width: 94% !important;
-  max-width: 1100px !important;
-  box-sizing: border-box;
-}
-
-#zhLatest h2 {
-  font-size: 17px !important;
-}
-
-#zhLatestGrid {
-  display: grid !important;
-  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-  gap: 10px !important;
-}
-
-#zhLatestGrid article {
-  min-width: 0 !important;
-}
-
-#zhLatestGrid article > div:first-child {
-  aspect-ratio: 3 / 3.5 !important;
-}
-
-#zhLatestGrid article h3 {
-  font-size: 12px !important;
-}
-
-#zhLatestGrid article button {
-  padding: 7px 4px !important;
-  font-size: 11px !important;
-}
-
-@media (min-width: 700px) {
-  #zhLatestGrid {
-    grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
-  }
-}
-/* ZH Movies - Full rectangular posters */
-
-#zhLatestGrid {
-  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  gap: 12px !important;
-}
-
-#zhLatestGrid article > div:first-child {
-  width: 100% !important;
-  aspect-ratio: 16 / 9 !important;
-  height: auto !important;
-  overflow: hidden !important;
-}
-
-#zhLatestGrid article > div:first-child img {
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: contain !important;
-  display: block !important;
-}
-
-@media (min-width: 700px) {
-  #zhLatestGrid {
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-  }
-}
-
-/* ZH MOVIES CINEMA - LATEST SECTION */
-
-#zhLatest {
-  width: 92% !important;
-  max-width: 1500px !important;
-  margin: 16px auto 24px !important;
-  padding: 18px !important;
-}
-
-#zhLatestGrid {
-  display: grid !important;
-  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  gap: 12px !important;
-}
-
-#zhLatestGrid article {
-  min-width: 0 !important;
-  overflow: hidden;
-}
-
-#zhLatestGrid article > div:first-child {
-  aspect-ratio: 16 / 9 !important;
-  width: 100% !important;
-  height: auto !important;
-}
-
-#zhLatestGrid article > div:first-child img {
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover !important;
-}
-
-@media (min-width: 768px) {
-  #zhLatestGrid {
-    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-    gap: 16px !important;
-  }
-}
-
-@media (min-width: 1200px) {
-  #zhLatestGrid {
-    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
-  }
-}
-
-/* ZH MOVIES CINEMA - WIDE LATEST */
-
-#zhLatest {
-  width: 94% !important;
-  max-width: 1700px !important;
-  margin: 16px auto 24px !important;
-}
-
-@media (min-width: 1200px) {
-  #zhLatestGrid {
-    grid-template-columns:
-      repeat(4, minmax(0, 1fr)) !important;
-  }
-}
-
-/* ZH MOVIES CINEMA - COMPACT LIBRARY */
-
+/* Compact main archive; preserve favorite and rating actions */
 #grid .card {
   display: flex;
   flex-direction: column;
-  min-width: 0;
   border-radius: 16px;
   transition: transform .2s ease, border-color .2s ease;
 }
-
-#grid .card:hover {
-  transform: translateY(-4px);
-  border-color: #d6a94f;
-}
-
-#grid .thumb {
-  aspect-ratio: 16 / 9;
-  flex-shrink: 0;
-}
-
+#grid .card:hover { transform: translateY(-4px); border-color: #d6a94f; }
+#grid .thumb { flex-shrink: 0; }
 #grid .info {
   display: flex;
-  flex-direction: column;
   flex: 1;
-  gap: 8px;
-  padding: 12px;
+  flex-direction: column;
+  gap: 5px;
+  padding: 10px;
 }
-
-#grid .info h3 {
-  font-size: 14px;
-  line-height: 1.6;
-  margin: 0;
-}
-
-#grid .info p {
-  margin: 2px 0;
-  line-height: 1.6;
-}
-
-#grid .info button {
-  max-width: 100%;
-}
-
-@media (max-width: 600px) {
-  #grid .info {
-    padding: 9px;
-    gap: 6px;
-  }
-
-  #grid .info h3 {
-    font-size: 12px;
-  }
-}
-
-/* ZH MOVIES - COMPACT CARD DETAILS */
-
-#grid .info {
-  gap: 5px !important;
-  padding: 10px !important;
-}
-
+#grid .info h3 { margin: 0; font-size: 14px; line-height: 1.6; }
+#grid .info > p { margin: 0 !important; line-height: 1.6; }
 #grid .info > button:not(.yellow) {
+  max-width: 100%;
   margin: 0 !important;
   padding: 7px 10px !important;
   font-size: 12px !important;
 }
-
-#grid .info > div {
-  margin: 2px 0 !important;
-  gap: 3px !important;
-}
-
+/* In app.js the rating stars are the buttons inside a direct child div. */
+#grid .info > div { margin: 2px 0 !important; gap: 3px !important; }
 #grid .info > div button {
   padding: 2px !important;
   font-size: 22px !important;
   line-height: 1.2 !important;
 }
+#grid .info > .yellow { max-width: 100%; margin-top: auto !important; }
 
-#grid .info > p {
-  margin: 0 !important;
+/* Footer */
+footer {
+  padding: 25px;
+  text-align: center;
+  background: #140b20;
+  color: #bca9ca;
+  border-top: 1px solid #60417c;
 }
 
-#grid .info > .yellow {
-  margin-top: auto !important;
+/* Admin modal */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  align-items: center;
+  justify-content: center;
+  padding: 15px;
+  background: #080310dd;
+}
+.modal.open { display: flex; }
+.panel {
+  position: relative;
+  width: min(100%, 440px);
+  max-height: 90vh;
+  overflow: auto;
+  padding: 25px;
+  background: #241532;
+  color: #fff;
+  border: 1px solid #b18a4d;
+  border-radius: 20px;
+}
+.close { float: left; padding: 4px 12px; }
+.panel form { display: grid; gap: 12px; margin-top: 16px; }
+.panel input, .panel select, .panel textarea {
+  width: 100%;
+  padding: 12px;
+  background: #170d22;
+  color: #fff;
+  border: 1px solid #76538c;
+  border-radius: 10px;
+}
+.row { display: flex; gap: 10px; }
+.pick { display: block; padding: 14px; border: 1px dashed #a879d5; border-radius: 12px; color: var(--purple); cursor: pointer; }
+.pick input { display: none; }
+.gold { border-color: #e5c85e; color: #8b6b13; }
+.bar { height: 7px; overflow: hidden; background: #eee; border-radius: 10px; }
+.bar div { width: 0; height: 100%; background: var(--purple); }
+#login[hidden], #uploadPanel[hidden] { display: none !important; }
+
+/* Responsive */
+@media (min-width: 768px) {
+  .grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; }
+  #zhLatestGrid { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; gap: 16px !important; }
+}
+@media (max-width: 600px) {
+  header { height: 60px; }
+  .hero { margin: 14px 4% 8px; padding: 24px 20px; min-height: 235px; border-radius: 20px; gap: 8px; }
+  .hero h1 { margin: 10px 0; font-size: clamp(25px, 7vw, 35px); line-height: 1.5; }
+  .hero p { margin: 8px 0 15px; font-size: 12px; }
+  .hero .yellow { padding: 10px 16px; font-size: 13px; }
+  #library { padding: 15px 5% 80px; }
+  .heading { gap: 8px; }
+  .heading h2 { font-size: 19px; }
+  .filter { padding: 9px 13px; font-size: 12px; }
+  .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .info { padding: 9px; }
+  .info h3 { font-size: 13px; }
+  .card { border-radius: 12px; }
+  #grid .info { padding: 9px; gap: 6px; }
+  #grid .info h3 { font-size: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #grid .card, .hero .yellow { transition: none; }
 }
