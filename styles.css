@@ -587,3 +587,57 @@ footer {
       repeat(4, minmax(0, 1fr)) !important;
   }
 }
+
+/* ZH MOVIES CINEMA - COMPACT LIBRARY */
+
+#grid .card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  border-radius: 16px;
+  transition: transform .2s ease, border-color .2s ease;
+}
+
+#grid .card:hover {
+  transform: translateY(-4px);
+  border-color: #d6a94f;
+}
+
+#grid .thumb {
+  aspect-ratio: 16 / 9;
+  flex-shrink: 0;
+}
+
+#grid .info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 8px;
+  padding: 12px;
+}
+
+#grid .info h3 {
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+#grid .info p {
+  margin: 2px 0;
+  line-height: 1.6;
+}
+
+#grid .info button {
+  max-width: 100%;
+}
+
+@media (max-width: 600px) {
+  #grid .info {
+    padding: 9px;
+    gap: 6px;
+  }
+
+  #grid .info h3 {
+    font-size: 12px;
+  }
+}
