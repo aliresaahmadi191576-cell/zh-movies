@@ -873,8 +873,17 @@ playerArea.style.display = "none";
         playerArea
       );
 
+     
+      // 🎬 Open details from Latest
+      posterBox.style.cursor = "pointer";
+      title.style.cursor = "pointer";
+
+      posterBox.onclick = () => openMovieDetails(item);
+      title.onclick = () => openMovieDetails(item);
+
       card.append(posterBox, content);
       latestGrid.append(card);
+
     });
   }
 
