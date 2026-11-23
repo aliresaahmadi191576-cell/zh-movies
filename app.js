@@ -498,7 +498,7 @@
     poster.src = item.poster || "";
     poster.alt = item.title;
    
-    poster.style.cssText = `
+       poster.style.cssText = `
       width:240px;
       max-width:100%;
       aspect-ratio:2/3;
