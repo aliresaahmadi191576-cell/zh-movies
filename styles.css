@@ -275,20 +275,32 @@ footer {
   #grid .card, .hero .yellow { transition: none; }
 }
 
-/* ZH MOVIES — Centered cinematic slider */
+
+/* ZH MOVIES — Premium compact cinema banner */
 .hero.zh-cinema {
+  display: block !important;
   width: 94% !important;
-  max-width: 1700px !important;
-  margin: 20px auto 14px !important;
-  aspect-ratio: 16 / 9;
-  max-height: none !important;
+  max-width: 1500px !important;
+  height: clamp(320px, 35vw, 480px) !important;
+  min-height: 0 !important;
+  max-height: 480px !important;
+  aspect-ratio: auto !important;
+  margin: 18px auto 14px !important;
   padding: 0 !important;
+  overflow: hidden !important;
+}
+
+.hero.zh-cinema .zh-cinema-stage {
+  height: 100% !important;
+  min-height: 0 !important;
 }
 
 @media (max-width: 600px) {
   .hero.zh-cinema {
     width: 94% !important;
-    margin: 14px auto 10px !important;
-    aspect-ratio: 4 / 3;
+    height: 260px !important;
+    max-height: 260px !important;
+    margin: 12px auto 10px !important;
+    border-radius: 18px !important;
   }
 }
