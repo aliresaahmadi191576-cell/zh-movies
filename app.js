@@ -1522,7 +1522,8 @@ Object.keys(totals).forEach(movieId => {
     totals[movieId].count;
 });
 
-    render();
+      render();
+    renderTopRated();
   },
   error => {
     console.error("Ratings loading error:", error);
