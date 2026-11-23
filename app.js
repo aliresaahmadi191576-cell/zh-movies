@@ -610,7 +610,82 @@
       actions
     );
     hero.append(poster, info);
-    panel.append(close, hero);
+
+    // 🎬 ZH MOVIES — Similar Titles
+    const similar = items
+      .filter(x =>
+        x.id !== item.id &&
+        x.category === item.category &&
+        x.poster
+      )
+      .slice(0, 6);
+
+    const similarSection = document.createElement("section");
+    similarSection.style.marginTop = "35px";
+
+    if (similar.length) {
+      const similarTitle = document.createElement("h2");
+      similarTitle.textContent = "🎬 آثار مشابه";
+      similarTitle.style.cssText = `
+        color:#ffd56a;
+        font-size:22px;
+        margin-bottom:18px;
+      `;
+
+      const similarGrid = document.createElement("div");
+      similarGrid.style.cssText = `
+        display:grid;
+        grid-template-columns:repeat(
+          auto-fill,minmax(min(100%,150px),1fr)
+        );
+        gap:15px;
+      `;
+
+      similar.forEach(x => {
+        const card = document.createElement("div");
+        card.style.cssText = `
+          background:rgba(45,22,65,.65);
+          border:1px solid rgba(255,213,106,.3);
+          border-radius:16px;
+          overflow:hidden;
+          cursor:pointer;
+          backdrop-filter:blur(12px);
+          transition:transform .3s;
+        `;
+
+        const img = document.createElement("img");
+        img.src = x.poster;
+        img.alt = x.title;
+        img.loading = "lazy";
+        img.style.cssText = `
+          width:100%;
+          aspect-ratio:2/3;
+          object-fit:cover;
+          display:block;
+        `;
+
+        const name = document.createElement("p");
+        name.textContent = x.kind === "series"
+          ? seriesName(x.title)
+          : x.title;
+        name.style.cssText = `
+          color:white;
+          padding:12px;
+          margin:0;
+          font-size:13px;
+          text-align:center;
+        `;
+
+        card.onclick = () => openMovieDetails(x);
+
+        card.append(img, name);
+        similarGrid.append(card);
+      });
+
+      similarSection.append(similarTitle, similarGrid);
+    }
+
+    panel.append(close, hero, similarSection);
     overlay.append(panel);
     document.body.append(overlay);
   }
